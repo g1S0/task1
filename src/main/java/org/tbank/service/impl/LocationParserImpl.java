@@ -21,8 +21,10 @@ public class LocationParserImpl implements XmlParser<Location> {
 
     private final Logger logger = LoggerFactory.getLogger(Main.class);
 
+    private static final int MAX_FILE_PATH_LENGTH = 15;
+
     public void toXML(Location objectToParse, String filePath) throws RuntimeException {
-        if (filePath.length() > 15) {
+        if (filePath.length() > MAX_FILE_PATH_LENGTH) {
             logger.warn("The file path '{}' is quite long and could potentially cause issues.", filePath);
             throw new IllegalArgumentException("The file path is too long: " + filePath);
         }
