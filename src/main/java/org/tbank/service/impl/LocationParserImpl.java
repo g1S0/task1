@@ -24,7 +24,7 @@ public class LocationParserImpl implements XmlParser<Location> {
     public void toXML(Location objectToParse, String filePath) throws RuntimeException {
         if (filePath.length() > 15) {
             logger.warn("The file path '{}' is quite long and could potentially cause issues.", filePath);
-            return;
+            throw new IllegalArgumentException("The file path is too long: " + filePath);
         }
 
         logger.debug("Starting XML conversion...");
