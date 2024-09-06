@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class Main {
     private static final XmlParser<Location> locationParser = new LocationParserImpl();
@@ -30,9 +31,9 @@ public class Main {
 
     private static Location parseJsonFile(String fileName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonFilePath = String.format("json/%s.json", fileName);
-        logger.debug("Parsing JSON file: {}", jsonFilePath);
-        Location location = objectMapper.readValue(new File(jsonFilePath), Location.class);
+        InputStream inputStream = Main.class.getClassLoader().getResourceAsStream(String.format("json/%s.json", fileName));
+        logger.debug("Parsing JSON file: {}", fileName);
+        Location location = objectMapper.readValue(inputStream, Location.class);
         logger.debug("Successfully parsed JSON file: {}", location);
         return location;
     }
