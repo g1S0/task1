@@ -1,4 +1,4 @@
-package main.java.org.tbank.model;
+package main.java.org.tbank.hw2.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Coords {
-    private double lat;
-    private double lon;
+public class Location {
+    private String slug;
+    private Coords coords;
 }

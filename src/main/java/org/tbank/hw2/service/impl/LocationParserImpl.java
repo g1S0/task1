@@ -1,7 +1,7 @@
-package main.java.org.tbank.service.impl;
-import main.java.org.tbank.Main;
-import main.java.org.tbank.model.Location;
-import main.java.org.tbank.service.XmlParser;
+package main.java.org.tbank.hw2.service.impl;
+import main.java.org.tbank.hw2.Main;
+import main.java.org.tbank.hw2.model.Location;
+import main.java.org.tbank.hw2.service.XmlParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

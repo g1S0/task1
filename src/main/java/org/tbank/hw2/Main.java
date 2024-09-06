@@ -1,9 +1,9 @@
-package main.java.org.tbank;
+package main.java.org.tbank.hw2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import main.java.org.tbank.model.Location;
-import main.java.org.tbank.service.XmlParser;
-import main.java.org.tbank.service.impl.LocationParserImpl;
+import main.java.org.tbank.hw2.model.Location;
+import main.java.org.tbank.hw2.service.XmlParser;
+import main.java.org.tbank.hw2.service.impl.LocationParserImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class Main {
     private static final XmlParser<Location> locationParser = new LocationParserImpl();
-    static private final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
         processFile("city-error");
