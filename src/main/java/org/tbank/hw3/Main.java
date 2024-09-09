@@ -2,8 +2,7 @@ package org.tbank.hw3;
 
 import org.tbank.hw3.CustomLinkedList.CustomLinkedList;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class Main {
@@ -40,5 +39,14 @@ public class Main {
                     return list1;
                 }
         );
+    }
+
+    public static int useReduceMethodForTerminateOperations() {
+        List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);
+
+        Optional<Integer> sum = numbers.stream()
+                .reduce(Integer::sum);
+
+        return sum.orElse(0);
     }
 }
