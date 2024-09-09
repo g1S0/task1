@@ -6,34 +6,28 @@ import org.tbank.hw3.model.Person;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomLinkedListTest {
     public CustomLinkedList<Integer> getCustomLinkedList() {
         CustomLinkedList<Integer> list = new CustomLinkedList<>();
-        list.add(1);
-        list.add(2);
-        list.add(3);
-        list.add(4);
-        list.add(5);
-        list.add(6);
+        Stream.of(1, 2, 3, 4, 5, 6)
+                .forEach(list::add);
 
         return list;
     }
 
     @Test
     public void testAdd() {
-        CustomLinkedList<Integer> list = new CustomLinkedList<>();
-        list.add(1);
+        CustomLinkedList<Integer> list = getCustomLinkedList();
         assertEquals(1, list.get(0));
     }
 
     @Test
     public void testGet() {
-        CustomLinkedList<Integer> list = new CustomLinkedList<>();
-        list.add(1);
-        list.add(2);
+        CustomLinkedList<Integer> list = getCustomLinkedList();
         assertEquals(1, list.get(0));
         assertEquals(2, list.get(1));
     }
@@ -46,13 +40,10 @@ public class CustomLinkedListTest {
 
     @Test
     public void testRemove() {
-        CustomLinkedList<Integer> list = new CustomLinkedList<>();
-        list.add(1);
-        list.add(2);
-        list.add(3);
+        CustomLinkedList<Integer> list = getCustomLinkedList();
         list.remove(1);
         assertEquals(1, list.get(0));
-        assertThrows(IndexOutOfBoundsException.class, () -> list.get(2));
+        assertThrows(IndexOutOfBoundsException.class, () -> list.get(7));
     }
 
     @Test
@@ -63,11 +54,9 @@ public class CustomLinkedListTest {
 
     @Test
     public void testContains() {
-        CustomLinkedList<Integer> list = new CustomLinkedList<>();
-        list.add(1);
-        list.add(2);
+        CustomLinkedList<Integer> list = getCustomLinkedList();
         assertTrue(list.contains(1));
-        assertFalse(list.contains(3));
+        assertFalse(list.contains(7));
     }
 
     @Test
@@ -96,10 +85,7 @@ public class CustomLinkedListTest {
 
     @Test
     public void testPrintAll() {
-        CustomLinkedList<Integer> list = new CustomLinkedList<>();
-        list.add(1);
-        list.add(2);
-        list.add(3);
+        CustomLinkedList<Integer> list = getCustomLinkedList();
 
         java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
         System.setOut(new java.io.PrintStream(outputStream));
@@ -107,7 +93,7 @@ public class CustomLinkedListTest {
         list.printAll();
 
         String output = outputStream.toString().trim();
-        assertEquals("1 -> 2 -> 3", output);
+        assertEquals("1 -> 2 -> 3 -> 4 -> 5 -> 6", output);
 
         System.setOut(System.out);
     }
