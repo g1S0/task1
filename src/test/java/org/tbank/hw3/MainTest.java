@@ -13,10 +13,15 @@ class MainTest {
 
         assertEquals(5, customLinkedList.size());
 
-        assertEquals(Integer.valueOf(1), customLinkedList.get(0));
-        assertEquals(Integer.valueOf(2), customLinkedList.get(1));
-        assertEquals(Integer.valueOf(3), customLinkedList.get(2));
-        assertEquals(Integer.valueOf(4), customLinkedList.get(3));
-        assertEquals(Integer.valueOf(5), customLinkedList.get(4));
+        assertEquals(1, customLinkedList.get(0));
+        assertEquals(2, customLinkedList.get(1));
+        assertEquals(3, customLinkedList.get(2));
+        assertEquals(4, customLinkedList.get(3));
+        assertEquals(5, customLinkedList.get(4));
+    }
+
+    @Test
+    public void testUseReduceMethodForTerminateOperations() {
+        assertEquals(21, Main.useReduceMethodForTerminateOperations());
     }
 }
