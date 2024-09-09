@@ -1,6 +1,7 @@
 package org.tbank.hw3;
 
 import org.tbank.hw3.CustomLinkedList.CustomLinkedList;
+import org.tbank.hw3.collector.CustomLinkedListCollector;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -8,7 +9,9 @@ import java.util.stream.Stream;
 public class Main {
     public static void main(String[] args) {
         operateCustomLinkedList();
+        fillCustomLinkedListWithStreamApiAndCollectMethod();
         fillCustomLinkedListWithStreamApi();
+        useReduceMethodForTerminateOperations();
     }
 
     public static void operateCustomLinkedList() {
@@ -23,6 +26,11 @@ public class Main {
         data.add(1);
         data.add(2);
         list.addAll(data);
+    }
+
+    public static CustomLinkedList<Integer> fillCustomLinkedListWithStreamApiAndCollectMethod() {
+        return Stream.of(1, 2, 3, 4, 5)
+                .collect(CustomLinkedListCollector.toCustomLinkedList());
     }
 
     public static CustomLinkedList<Integer> fillCustomLinkedListWithStreamApi() {
