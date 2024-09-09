@@ -10,6 +10,18 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomLinkedListTest {
+    public CustomLinkedList<Integer> getCustomLinkedList() {
+        CustomLinkedList<Integer> list = new CustomLinkedList<>();
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        list.add(5);
+        list.add(6);
+
+        return list;
+    }
+
     @Test
     public void testAdd() {
         CustomLinkedList<Integer> list = new CustomLinkedList<>();
@@ -37,9 +49,10 @@ public class CustomLinkedListTest {
         CustomLinkedList<Integer> list = new CustomLinkedList<>();
         list.add(1);
         list.add(2);
-        list.remove(0);
-        assertEquals(2, list.get(0));
-        assertThrows(IndexOutOfBoundsException.class, () -> list.get(1));
+        list.add(3);
+        list.remove(1);
+        assertEquals(1, list.get(0));
+        assertThrows(IndexOutOfBoundsException.class, () -> list.get(2));
     }
 
     @Test
@@ -112,5 +125,25 @@ public class CustomLinkedListTest {
         assertTrue(list.contains(person1));
         assertTrue(list.contains(person3));
         assertFalse(list.contains(new Person("Charlie", 40)));
+    }
+
+    @Test
+    public void testRemoveLastElement() {
+        CustomLinkedList<Integer> list = getCustomLinkedList();
+
+        list.remove(list.size() - 1);
+
+        assertEquals(5, list.get(list.size() - 1));
+        assertEquals(4, list.get(list.size() - 2));
+    }
+
+    @Test
+    public void testRemoveFirst() {
+        CustomLinkedList<Integer> list = getCustomLinkedList();
+
+        list.remove(0);
+
+        assertEquals(2, list.get(0));
+        assertEquals(3, list.get(1));
     }
 }
