@@ -3,6 +3,7 @@ package org.tbank.hw3;
 import org.tbank.hw3.CustomLinkedList.CustomLinkedList;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.stream.Stream;
 
 public class Main {
