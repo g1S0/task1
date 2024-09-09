@@ -1,5 +1,6 @@
 package org.tbank.hw3.CustomLinkedList;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class CustomLinkedList<E> {
@@ -124,6 +125,16 @@ public class CustomLinkedList<E> {
 
     public int size() {
         return size;
+    }
+
+    public E peekTail() {
+        final Node<E> t = tail;
+        return (t == null) ? null : tail.data;
+    }
+
+    public E peekHead() {
+        final Node<E> h = head;
+        return (h == null) ? null : h.data;
     }
 
 }
