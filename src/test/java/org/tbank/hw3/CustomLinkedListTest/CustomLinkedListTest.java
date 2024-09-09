@@ -132,4 +132,22 @@ public class CustomLinkedListTest {
         assertEquals(2, list.get(0));
         assertEquals(3, list.get(1));
     }
+
+    @Test
+    public void testRemoveSingleElement() {
+        CustomLinkedList<Integer> list = new CustomLinkedList<>();
+        list.add(10);
+
+        assertEquals(1, list.size());
+        assertEquals(10, list.get(0));
+        assertNotNull(list.peekHead());
+        assertNotNull(list.peekTail());
+        assertEquals(list.peekHead(), list.peekTail());
+
+        list.remove(0);
+
+        assertEquals(0, list.size());
+        assertNull(list.peekHead());
+        assertNull(list.peekTail());
+    }
 }
