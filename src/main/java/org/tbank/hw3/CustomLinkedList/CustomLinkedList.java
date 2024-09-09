@@ -1,6 +1,5 @@
 package org.tbank.hw3.CustomLinkedList;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class CustomLinkedList<E> {
