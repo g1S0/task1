@@ -1,7 +1,6 @@
-package main.java.org.tbank.hw2.service.impl;
-import main.java.org.tbank.hw2.Main;
-import main.java.org.tbank.hw2.model.Location;
-import main.java.org.tbank.hw2.service.XmlParser;
+package org.tbank.hw2.service.impl;
+import org.tbank.hw2.model.Location;
+import org.tbank.hw2.service.XmlParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -19,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 public class LocationParserImpl implements XmlParser<Location> {
 
-    private final Logger logger = LoggerFactory.getLogger(Main.class);
+    private final Logger logger = LoggerFactory.getLogger(LocationParserImpl.class);
 
     private static final int MAX_FILE_PATH_LENGTH = 15;
 

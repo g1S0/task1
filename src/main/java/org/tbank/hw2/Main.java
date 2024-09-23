@@ -1,11 +1,11 @@
-package main.java.org.tbank.hw2;
+package org.tbank.hw2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import main.java.org.tbank.hw2.model.Location;
-import main.java.org.tbank.hw2.service.XmlParser;
-import main.java.org.tbank.hw2.service.impl.LocationParserImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tbank.hw2.model.Location;
+import org.tbank.hw2.service.XmlParser;
+import org.tbank.hw2.service.impl.LocationParserImpl;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package main.java.org.tbank.hw2.model;
+package org.tbank.hw2.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
