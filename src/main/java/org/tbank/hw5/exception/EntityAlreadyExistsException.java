@@ -1,4 +1,4 @@
-package org.tbank.hw5.exceptions;
+package org.tbank.hw5.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.tbank.hw5.exceptions.EntityAlreadyExistsException;
+import org.tbank.hw5.exception.EntityAlreadyExistsException;
 
 public class LocalStorage<K, T> {
     private final Map<K, T> storage = new ConcurrentHashMap<>();

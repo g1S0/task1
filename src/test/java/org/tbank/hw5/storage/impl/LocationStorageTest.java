@@ -1,7 +1,7 @@
 package org.tbank.hw5.storage.impl;
 
 import org.junit.jupiter.api.Test;
-import org.tbank.hw5.exceptions.EntityAlreadyExistsException;
+import org.tbank.hw5.exception.EntityAlreadyExistsException;
 import org.tbank.hw5.model.Location;
 
 import java.util.List;

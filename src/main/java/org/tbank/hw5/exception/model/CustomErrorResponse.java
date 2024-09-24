@@ -1,4 +1,4 @@
-package org.tbank.hw5.exceptions.model;
+package org.tbank.hw5.exception.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

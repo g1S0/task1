@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.tbank.hw5.exceptions.EntityAlreadyExistsException;
-import org.tbank.hw5.exceptions.model.CustomErrorResponse;
+import org.tbank.hw5.exception.EntityAlreadyExistsException;
+import org.tbank.hw5.exception.model.CustomErrorResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
