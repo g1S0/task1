@@ -2,6 +2,7 @@ package org.tbank.hw5.storage.impl;
 
 import org.junit.jupiter.api.Test;
 import org.tbank.hw5.exception.EntityAlreadyExistsException;
+import org.tbank.hw5.exception.EntityNotFoundException;
 import org.tbank.hw5.model.Location;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LocationStorageTest {
+
     public LocationStorage getLocationStorage() {
         return new LocationStorage();
     }
@@ -51,7 +53,7 @@ class LocationStorageTest {
         locationStorage.save("ekb", location);
 
         Location updatedLocation = new Location("ekb", "Екатеринабург");
-        locationStorage.update("ekb", updatedLocation);
+        locationStorage.update("ekb", updatedLocation.getSlug(), updatedLocation);
         Location foundLocation = locationStorage.findById("ekb");
 
         assertNotNull(foundLocation);
@@ -83,6 +85,40 @@ class LocationStorageTest {
 
         assertThrows(EntityAlreadyExistsException.class, () -> {
             locationStorage.save("ekb", duplicateLocation);
+        });
+    }
+
+    @Test
+    void testUpdateWithDifferentIdsThrowsException() {
+        LocationStorage locationStorage = getLocationStorage();
+
+        Location location = new Location("ekb", "Екатеринбург");
+        locationStorage.save("ekb", location);
+
+        Location updatedLocation = new Location("spb", "Санкт-Петербург");
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            locationStorage.update(updatedLocation.getSlug(), location.getSlug(), updatedLocation);
+        });
+    }
+
+    @Test
+    void testUpdateNonExistentEntityThrowsException() {
+        LocationStorage locationStorage = getLocationStorage();
+
+        Location updatedLocation = new Location("ekb", "Екатеринабург");
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            locationStorage.update("ekb", "ekb", updatedLocation);
+        });
+    }
+
+    @Test
+    void testDeleteNonExistentLocationThrowsException() {
+        LocationStorage locationStorage = getLocationStorage();
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            locationStorage.deleteById("ekb"); // Локации с таким ID нет
         });
     }
 }

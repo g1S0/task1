@@ -33,7 +33,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public Location updateLocation(String id, Location location) {
-        return locationStorage.update(id, location);
+        return locationStorage.update(location.getSlug(), id, location);
     }
 
     @Override

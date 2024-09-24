@@ -2,6 +2,7 @@ package org.tbank.hw5.storage.impl;
 
 import org.junit.jupiter.api.Test;
 import org.tbank.hw5.exception.EntityAlreadyExistsException;
+import org.tbank.hw5.exception.EntityNotFoundException;
 import org.tbank.hw5.model.Category;
 
 import java.util.List;
@@ -52,7 +53,8 @@ class CategoryStorageTest {
         categoryStorage.save(123L, category);
 
         Category updatedCategory = new Category(123L, "ports", "Порты");
-        categoryStorage.update(123L, updatedCategory);
+
+        categoryStorage.update(updatedCategory.getId(), category.getId(), updatedCategory);
         Category foundCategory = categoryStorage.findById(123L);
 
         assertNotNull(foundCategory);
@@ -84,6 +86,40 @@ class CategoryStorageTest {
 
         assertThrows(EntityAlreadyExistsException.class, () -> {
             categoryStorage.save(123L, duplicateCategory);
+        });
+    }
+
+    @Test
+    void testUpdateWithDifferentIdsThrowsException() {
+        CategoryStorage categoryStorage = getCategoryStorage();
+
+        Category category = new Category(123L, "airports", "Аэропорты");
+        categoryStorage.save(123L, category);
+
+        Category updatedCategory = new Category(456L, "ports", "Порты");
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            categoryStorage.update(updatedCategory.getId(), category.getId(), updatedCategory);
+        });
+    }
+
+    @Test
+    void testUpdateNonExistentEntityThrowsException() {
+        CategoryStorage categoryStorage = getCategoryStorage();
+
+        Category updatedCategory = new Category(123L, "ports", "Порты");
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            categoryStorage.update(123L, 123L, updatedCategory);
+        });
+    }
+
+    @Test
+    void testDeleteNonExistentCategoryThrowsException() {
+        CategoryStorage categoryStorage = getCategoryStorage();
+
+        assertThrows(EntityNotFoundException.class, () -> {
+            categoryStorage.deleteById(123L); // Категории с таким ID нет
         });
     }
 }
