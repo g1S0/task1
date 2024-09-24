@@ -14,7 +14,7 @@ public interface LocationController {
     ResponseEntity<ResponseDto<List<LocationDto>>> getAllLocations();
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<LocationDto>> getLocationById(@PathVariable String id);
+    ResponseEntity<ResponseDto<LocationDto>> getLocationById(@PathVariable String id);
 
     @PostMapping
     ResponseEntity<ResponseDto<LocationDto>> createLocation(@RequestBody LocationDto locationDto);
