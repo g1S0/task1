@@ -1,6 +1,7 @@
 package org.tbank.hw5.initializer;
 
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import org.tbank.hw5.storage.impl.CategoryStorage;
 import java.util.List;
 
 @Component
-public class DataSourceInitializer implements CommandLineRunner {
+public class DataSourceInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSourceInitializer.class);
 
@@ -28,9 +29,9 @@ public class DataSourceInitializer implements CommandLineRunner {
         this.categoryMapper = categoryMapper;
     }
 
-    @Override
+    @EventListener(ApplicationReadyEvent.class)
     @LogExecutionTime
-    public void run(String... args) {
+    public void initializeDataSource() {
         logger.info("Starting data source initialization...");
 
         CategoryDto[] categoriesDto = kudagoService.fetchCategoriesFromApi();
