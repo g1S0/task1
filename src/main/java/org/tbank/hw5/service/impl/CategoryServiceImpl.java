@@ -1,7 +1,6 @@
 package org.tbank.hw5.service.impl;
 
 import org.springframework.stereotype.Service;
-import org.tbank.hw5.annotation.LogExecutionTime;
 import org.tbank.hw5.model.Category;
 import org.tbank.hw5.service.CategoryService;
 import org.tbank.hw5.storage.impl.CategoryStorage;
