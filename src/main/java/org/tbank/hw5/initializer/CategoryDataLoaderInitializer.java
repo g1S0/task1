@@ -16,7 +16,7 @@ import java.util.List;
 
 @Component
 public class CategoryDataLoaderInitializer {
-    private static final Logger logger = LoggerFactory.getLogger(LocationDataLoaderInitializer.class);
+    private static final Logger logger = LoggerFactory.getLogger(CategoryDataLoaderInitializer.class);
 
     private final CategoryApiClient categoryApiClient;
     private final CategoryStorage categoryStorage;
