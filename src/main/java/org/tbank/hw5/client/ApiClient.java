@@ -1,10 +1,9 @@
 package org.tbank.hw5.client;
 
-import org.springframework.web.client.RestClient;
-import org.springframework.stereotype.Component;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
-import org.springframework.web.client.RestClientException;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
 import java.util.Arrays;
 import java.util.List;
