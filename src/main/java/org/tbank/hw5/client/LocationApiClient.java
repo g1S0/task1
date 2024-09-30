@@ -9,7 +9,7 @@ import java.util.List;
 public class LocationApiClient {
     private final ApiClient apiClient;
 
-    private static final String API_LOCATION_URL = "https://kudago.com/public-api/v1.4/locations";
+    private static final String API_LOCATION_URL = "https://kudago.com/public-api/v1.4/locations/";
 
     public LocationApiClient(ApiClient apiClient) {
         this.apiClient = apiClient;
