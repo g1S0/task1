@@ -5,6 +5,9 @@ import org.springframework.stereotype.Component;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Component
 public class ApiClient {
 
@@ -15,17 +18,17 @@ public class ApiClient {
         this.restTemplate = restTemplate;
     }
 
-    public <T> T fetchFromApi(String apiUrl, Class<T> responseType, String entityType) {
+    public <T> List<T> fetchFromApi(String apiUrl, Class<T[]> responseType, String entityType) {
         logger.info("Fetching {} from API at {}", entityType, apiUrl);
 
-        T response = restTemplate.getForObject(apiUrl, responseType);
+        T[] responseArray = restTemplate.getForObject(apiUrl, responseType);
 
-        if (response != null) {
-            logger.info("Successfully fetched {} from API.", entityType);
-        } else {
-            logger.warn("No {} fetched from API.", entityType);
+        if (responseArray == null || responseArray.length == 0) {
+            logger.error("Failed to fetch {} from API at {}.", entityType, apiUrl);
+            throw new IllegalStateException("No " + entityType + " fetched from API.");
         }
 
-        return response;
+        logger.info("Successfully fetched {} from API.", entityType);
+        return Arrays.asList(responseArray);
     }
 }

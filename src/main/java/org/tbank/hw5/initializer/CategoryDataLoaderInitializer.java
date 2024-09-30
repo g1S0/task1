@@ -33,9 +33,9 @@ public class CategoryDataLoaderInitializer {
     public void initializeCategories() {
         logger.info("Starting data source for categories");
 
-        CategoryDto[] categoriesDto = categoryApiClient.fetchCategoriesFromApi();
+        List<CategoryDto> categoriesDto = categoryApiClient.fetchCategoriesFromApi();
 
-        List<Category> categories = categoryMapper.toCategoryList(List.of(categoriesDto));
+        List<Category> categories = categoryMapper.toCategoryList(categoriesDto);
 
         if (categories != null) {
             for (Category category : categories) {

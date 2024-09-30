@@ -3,6 +3,8 @@ package org.tbank.hw5.client;
 import org.springframework.stereotype.Component;
 import org.tbank.hw5.dto.CategoryDto;
 
+import java.util.List;
+
 @Component
 public class CategoryApiClient {
     private final ApiClient apiClient;
@@ -13,7 +15,7 @@ public class CategoryApiClient {
         this.apiClient = apiClient;
     }
 
-    public CategoryDto[] fetchCategoriesFromApi() {
+    public List<CategoryDto> fetchCategoriesFromApi() {
         return apiClient.fetchFromApi(API_CATEGORY_URL, CategoryDto[].class, "categories");
     }
 }
