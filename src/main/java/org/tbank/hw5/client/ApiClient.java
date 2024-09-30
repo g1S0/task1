@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class ApiClient {
+public abstract class ApiClient<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiClient.class);
     private final RestClient restClient;
@@ -18,7 +18,7 @@ public class ApiClient {
         this.restClient = restClient;
     }
 
-    public <T> List<T> fetchFromApi(String apiUrl, Class<T[]> responseType, String entityType) {
+    public List<T> fetchFromApi(String apiUrl, Class<T[]> responseType, String entityType) {
         logger.info("Fetching {} from API at {}", entityType, apiUrl);
 
         T[] responseArray = restClient
