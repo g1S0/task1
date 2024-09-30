@@ -34,7 +34,7 @@ public class LocationDataLoaderInitializer {
     public void initializeCategories() {
         logger.info("Starting location data source for locations");
 
-        List<LocationDto> locationsDto = locationApiClient.fetchLocationsFromApi();
+        List<LocationDto> locationsDto = locationApiClient.fetchLocations();
 
         List<Location> locations = locationMapper.toLocationList(locationsDto);
 

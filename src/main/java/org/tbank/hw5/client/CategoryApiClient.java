@@ -15,7 +15,7 @@ public class CategoryApiClient {
         this.apiClient = apiClient;
     }
 
-    public List<CategoryDto> fetchCategoriesFromApi() {
+    public List<CategoryDto> fetchCategories() {
         return apiClient.fetchFromApi(API_CATEGORY_URL, CategoryDto[].class, "categories");
     }
 }

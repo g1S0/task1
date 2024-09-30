@@ -15,7 +15,7 @@ public class LocationApiClient {
         this.apiClient = apiClient;
     }
 
-    public List<LocationDto> fetchLocationsFromApi() {
+    public List<LocationDto> fetchLocations() {
         return apiClient.fetchFromApi(API_LOCATION_URL, LocationDto[].class, "locations");
     }
 }
