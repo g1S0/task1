@@ -16,6 +16,6 @@ public class CategoryApiClient extends ApiClient<CategoryDto> {
     }
 
     public List<CategoryDto> fetchCategories() {
-        return fetchFromApi(API_CATEGORY_URL, CategoryDto[].class, "categories");
+        return fetchFromApi(API_CATEGORY_URL, CategoryDto[].class);
     }
 }

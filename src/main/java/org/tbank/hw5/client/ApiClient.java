@@ -18,8 +18,8 @@ public abstract class ApiClient<T> {
         this.restClient = restClient;
     }
 
-    public List<T> fetchFromApi(String apiUrl, Class<T[]> responseType, String entityType) {
-        logger.info("Fetching {} from API at {}", entityType, apiUrl);
+    public List<T> fetchFromApi(String apiUrl, Class<T[]> responseType) {
+        logger.info("Fetching {} from API at {}", responseType.getSimpleName(), apiUrl);
 
         T[] responseArray = restClient
                 .get()
@@ -28,11 +28,11 @@ public abstract class ApiClient<T> {
                 .body(responseType);
 
         if (responseArray == null || responseArray.length == 0) {
-            logger.error("Failed to fetch {} from API at {}.", entityType, apiUrl);
-            throw new IllegalStateException("No " + entityType + " fetched from API.");
+            logger.error("Failed to fetch {} from API at {}.", responseType.getSimpleName(), apiUrl);
+            throw new IllegalStateException("No " + responseType.getSimpleName() + " fetched from API.");
         }
 
-        logger.info("Successfully fetched {} from API.", entityType);
+        logger.info("Successfully fetched {} from API.", responseType.getSimpleName());
         return Arrays.asList(responseArray);
     }
 }

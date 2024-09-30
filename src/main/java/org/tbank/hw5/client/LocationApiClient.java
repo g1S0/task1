@@ -16,6 +16,6 @@ public class LocationApiClient extends ApiClient<LocationDto> {
     }
 
     public List<LocationDto> fetchLocations() {
-        return fetchFromApi(API_LOCATION_URL, LocationDto[].class, "locations");
+        return fetchFromApi(API_LOCATION_URL, LocationDto[].class);
     }
 }
