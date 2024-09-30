@@ -1,6 +1,6 @@
 package org.tbank.hw5.client;
 
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import org.springframework.stereotype.Component;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -12,16 +12,20 @@ import java.util.List;
 public class ApiClient {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiClient.class);
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
 
-    public ApiClient(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public ApiClient(RestClient restClient) {
+        this.restClient = restClient;
     }
 
     public <T> List<T> fetchFromApi(String apiUrl, Class<T[]> responseType, String entityType) {
         logger.info("Fetching {} from API at {}", entityType, apiUrl);
 
-        T[] responseArray = restTemplate.getForObject(apiUrl, responseType);
+        T[] responseArray = restClient
+                .get()
+                .uri(apiUrl)
+                .retrieve()
+                .body(responseType);
 
         if (responseArray == null || responseArray.length == 0) {
             logger.error("Failed to fetch {} from API at {}.", entityType, apiUrl);
