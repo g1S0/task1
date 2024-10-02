@@ -12,6 +12,7 @@ import org.tbank.hw5.client.CategoryApiClient;
 import org.tbank.hw5.client.LocationApiClient;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
 import org.wiremock.integrations.testcontainers.WireMockContainer;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -20,7 +21,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class DataSourceFailureInitializationIT {
     @Container
-    static WireMockContainer wireMock = new WireMockContainer("wiremock/wiremock:3.6.0");
+    static WireMockContainer wireMock = new WireMockContainer("wiremock/wiremock:3.6.0")
+            .withCopyFileToContainer(
+                    MountableFile.forHostPath("src/test/resources/wiremock/json"),
+                    "/home/wiremock/./__files");
 
     @LocalServerPort
     private Integer port;
@@ -35,8 +39,7 @@ class DataSourceFailureInitializationIT {
         WireMock.stubFor(get(urlEqualTo("/place-categories/"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withBody("[{\"id\": 1, \"slug\":\"airports\", \"name\":\"Airports\"}, " +
-                                "{\"id\": 2, \"slug\":\"parks\", \"name\":\"Parks\"}]")
+                        .withBodyFile("valid_category.json")
                         .withHeader("Content-Type", "application/json")));
     }
 
@@ -44,7 +47,7 @@ class DataSourceFailureInitializationIT {
         WireMock.stubFor(get(urlEqualTo("/locations/"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withBody("[{\"slug\":\"ekb\",\"name\":\"Yekaterinburg\"},{\"slug\":\"krd\",\"name\":\"Krasnodar\"}]")
+                        .withBodyFile("valid_location.json")
                         .withHeader("Content-Type", "application/json")));
     }
 
@@ -70,7 +73,7 @@ class DataSourceFailureInitializationIT {
         WireMock.stubFor(get(urlEqualTo("/locations/"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withBody("[{\"slug\":\"ekb\",\"name\":\"Yekaterinburg\"}, {invalid json here}]")
+                        .withBodyFile("invalid_location.json")
                         .withHeader("Content-Type", "application/json")));
     }
 
@@ -89,7 +92,7 @@ class DataSourceFailureInitializationIT {
         WireMock.stubFor(get(urlEqualTo("/place-categories/"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withBody("[{\"id\": 1, \"slug\":\"airports\", \"name\":\"Airports\"}, {invalid json here}]")
+                        .withBodyFile("invalid_category.json")
                         .withHeader("Content-Type", "application/json")));
     }
 

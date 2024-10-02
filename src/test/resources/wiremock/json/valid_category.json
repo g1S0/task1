@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "slug": "airports",
+    "name": "Airports"
+  },
+  {
+    "id": 2,
+    "slug": "parks",
+    "name": "Parks"
+  }
+]
