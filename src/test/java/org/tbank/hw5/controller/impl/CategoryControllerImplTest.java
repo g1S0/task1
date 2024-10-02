@@ -23,8 +23,8 @@ import org.tbank.hw5.service.CategoryService;
 public class CategoryControllerImplTest {
 
     private static final Long CATEGORY_ID = 1L;
-    private static final String CATEGORY_SLUG = "slug1";
-    private static final String CATEGORY_NAME = "Category 1";
+    private static final String CATEGORY_SLUG = "airports";
+    private static final String CATEGORY_NAME = "Airports";
     private static final int STATUS_OK = 200;
     private static final int STATUS_NO_CONTENT = 204;
 
