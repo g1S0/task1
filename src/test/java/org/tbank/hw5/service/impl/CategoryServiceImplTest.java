@@ -21,21 +21,35 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CategoryServiceImplTest {
 
+    private static final Long CATEGORY_ID_1 = 1L;
+    private static final Long CATEGORY_ID_2 = 2L;
+    private static final String CATEGORY_SLUG_1 = "airports";
+    private static final String CATEGORY_SLUG_2 = "Airports";
+    private static final String CATEGORY_NAME_1 = "amusement";
+    private static final String CATEGORY_NAME_2 = "Amusement parks (Entertainment)";
+    private static final String UPDATED_CATEGORY_NAME = "AntiCafe";
+    private static final String ENTITY_NOT_FOUND_MESSAGE = "Entity not found";
+    private static final String ENTITY_ALREADY_EXISTS_MESSAGE = "Entity already exists";
+
     @Mock
     private CategoryStorage categoryStorage;
 
     @InjectMocks
     private CategoryServiceImpl categoryService;
 
+    private Category createCategory(Long id, String slug, String name) {
+        return new Category(id, slug, name);
+    }
+
     private Category getCategory() {
-        return new Category(1L, "slug1", "Category 1");
+        return createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, CATEGORY_NAME_1);
     }
 
     @Test
     public void testGetAllCategories_PositiveScenario() {
         List<Category> mockCategories = List.of(
-                new Category(1L, "slug1", "Category 1"),
-                new Category(2L, "slug2", "Category 2")
+                createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, CATEGORY_NAME_1),
+                createCategory(CATEGORY_ID_2, CATEGORY_SLUG_2, CATEGORY_NAME_2)
         );
 
         when(categoryStorage.findAll()).thenReturn(mockCategories);
@@ -43,7 +57,7 @@ public class CategoryServiceImplTest {
         List<Category> categories = categoryService.getAllCategories();
 
         assertEquals(2, categories.size());
-        assertEquals("Category 1", categories.get(0).getName());
+        assertEquals(CATEGORY_NAME_1, categories.get(0).getName());
     }
 
     @Test
@@ -57,19 +71,19 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetCategoryById_PositiveScenario() {
-        when(categoryStorage.findById(1L)).thenReturn(getCategory());
+        when(categoryStorage.findById(CATEGORY_ID_1)).thenReturn(getCategory());
 
-        Category category = categoryService.getCategoryById(1L);
+        Category category = categoryService.getCategoryById(CATEGORY_ID_1);
 
         assertNotNull(category);
-        assertEquals("Category 1", category.getName());
+        assertEquals(CATEGORY_NAME_1, category.getName());
     }
 
     @Test
     public void testGetCategoryById_NegativeScenario() {
-        when(categoryStorage.findById(1L)).thenReturn(null);
+        when(categoryStorage.findById(CATEGORY_ID_1)).thenReturn(null);
 
-        Category category = categoryService.getCategoryById(1L);
+        Category category = categoryService.getCategoryById(CATEGORY_ID_1);
 
         assertNull(category);
     }
@@ -78,7 +92,7 @@ public class CategoryServiceImplTest {
     public void testCreateCategory_PositiveScenario() throws EntityAlreadyExistsException {
         Category newCategory = getCategory();
 
-        when(categoryStorage.save(1L, newCategory)).thenReturn(newCategory);
+        when(categoryStorage.save(CATEGORY_ID_1, newCategory)).thenReturn(newCategory);
 
         Category savedCategory = categoryService.createCategory(newCategory);
 
@@ -89,46 +103,46 @@ public class CategoryServiceImplTest {
     public void testCreateCategory_NegativeScenario() throws EntityAlreadyExistsException {
         Category newCategory = getCategory();
 
-        when(categoryStorage.save(1L, newCategory))
-                .thenThrow(new EntityAlreadyExistsException("Entity already exists"));
+        when(categoryStorage.save(CATEGORY_ID_1, newCategory))
+                .thenThrow(new EntityAlreadyExistsException(ENTITY_ALREADY_EXISTS_MESSAGE));
 
         assertThrows(EntityAlreadyExistsException.class, () -> categoryService.createCategory(newCategory));
     }
 
     @Test
     public void testUpdateCategory_PositiveScenario() {
-        Category updatedCategory = new Category(1L, "slug1", "Updated Category");
+        Category updatedCategory = createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, UPDATED_CATEGORY_NAME);
 
-        when(categoryStorage.update(1L, 1L, updatedCategory)).thenReturn(updatedCategory);
+        when(categoryStorage.update(CATEGORY_ID_1, CATEGORY_ID_1, updatedCategory)).thenReturn(updatedCategory);
 
-        Category result = categoryService.updateCategory(1L, updatedCategory);
+        Category result = categoryService.updateCategory(CATEGORY_ID_1, updatedCategory);
 
-        assertEquals("Updated Category", result.getName());
+        assertEquals(UPDATED_CATEGORY_NAME, result.getName());
     }
 
     @Test
     public void testUpdateCategory_NegativeScenario() {
         Category updatedCategory = getCategory();
 
-        when(categoryStorage.update(1L, 1L, updatedCategory))
-                .thenThrow(new EntityNotFoundException("Entity not found"));
+        when(categoryStorage.update(CATEGORY_ID_1, CATEGORY_ID_1, updatedCategory))
+                .thenThrow(new EntityNotFoundException(ENTITY_NOT_FOUND_MESSAGE));
 
-        assertThrows(EntityNotFoundException.class, () -> categoryService.updateCategory(1L, updatedCategory));
+        assertThrows(EntityNotFoundException.class, () -> categoryService.updateCategory(CATEGORY_ID_1, updatedCategory));
     }
 
     @Test
     public void testDeleteCategory_PositiveScenario() {
-        Mockito.doNothing().when(categoryStorage).deleteById(1L);
+        Mockito.doNothing().when(categoryStorage).deleteById(CATEGORY_ID_1);
 
-        categoryService.deleteCategory(1L);
+        categoryService.deleteCategory(CATEGORY_ID_1);
 
-        Mockito.verify(categoryStorage, Mockito.times(1)).deleteById(1L);
+        Mockito.verify(categoryStorage, Mockito.times(1)).deleteById(CATEGORY_ID_1);
     }
 
     @Test
     public void testDeleteCategory_NegativeScenario() {
-        doThrow(new EntityNotFoundException("Entity not found")).when(categoryStorage).deleteById(1L);
+        doThrow(new EntityNotFoundException(ENTITY_NOT_FOUND_MESSAGE)).when(categoryStorage).deleteById(CATEGORY_ID_1);
 
-        assertThrows(EntityNotFoundException.class, () -> categoryService.deleteCategory(1L));
+        assertThrows(EntityNotFoundException.class, () -> categoryService.deleteCategory(CATEGORY_ID_1));
     }
 }

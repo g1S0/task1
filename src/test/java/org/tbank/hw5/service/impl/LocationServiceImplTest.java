@@ -21,21 +21,33 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class LocationServiceImplTest {
 
+    private static final String LOCATION_SLUG_MSK = "msk";
+    private static final String LOCATION_SLUG_SPB = "spb";
+    private static final String LOCATION_NAME_MSK = "Москва";
+    private static final String LOCATION_NAME_SPB = "Санкт-Петербург";
+    private static final String UPDATED_LOCATION_NAME_MSK = "Updated Москва";
+    private static final String ENTITY_NOT_FOUND_MESSAGE = "Entity not found";
+    private static final String ENTITY_ALREADY_EXISTS_MESSAGE = "Entity already exists";
+
     @Mock
     private LocationStorage locationStorage;
 
     @InjectMocks
     private LocationServiceImpl locationService;
 
+    private Location createLocation(String slug, String name) {
+        return new Location(slug, name);
+    }
+
     private Location getLocation() {
-        return new Location("msk", "Москва");
+        return createLocation(LOCATION_SLUG_MSK, LOCATION_NAME_MSK);
     }
 
     @Test
     public void testGetAllLocations_PositiveScenario() {
         List<Location> mockLocations = List.of(
-                new Location("msk", "Москва"),
-                new Location("spb", "Санкт-Петербург")
+                createLocation(LOCATION_SLUG_MSK, LOCATION_NAME_MSK),
+                createLocation(LOCATION_SLUG_SPB, LOCATION_NAME_SPB)
         );
 
         when(locationStorage.findAll()).thenReturn(mockLocations);
@@ -43,7 +55,7 @@ public class LocationServiceImplTest {
         List<Location> locations = locationService.getAllLocations();
 
         assertEquals(2, locations.size());
-        assertEquals("Москва", locations.get(0).getName());
+        assertEquals(LOCATION_NAME_MSK, locations.get(0).getName());
     }
 
     @Test
@@ -57,19 +69,19 @@ public class LocationServiceImplTest {
 
     @Test
     public void testGetLocationBySlug_PositiveScenario() {
-        when(locationStorage.findById("msk")).thenReturn(getLocation());
+        when(locationStorage.findById(LOCATION_SLUG_MSK)).thenReturn(getLocation());
 
-        Location location = locationService.getLocationById("msk");
+        Location location = locationService.getLocationById(LOCATION_SLUG_MSK);
 
         assertNotNull(location);
-        assertEquals("Москва", location.getName());
+        assertEquals(LOCATION_NAME_MSK, location.getName());
     }
 
     @Test
     public void testGetLocationBySlug_NegativeScenario() {
-        when(locationStorage.findById("msk")).thenReturn(null);
+        when(locationStorage.findById(LOCATION_SLUG_MSK)).thenReturn(null);
 
-        Location location = locationService.getLocationById("msk");
+        Location location = locationService.getLocationById(LOCATION_SLUG_MSK);
 
         assertNull(location);
     }
@@ -78,7 +90,7 @@ public class LocationServiceImplTest {
     public void testCreateLocation_PositiveScenario() throws EntityAlreadyExistsException {
         Location newLocation = getLocation();
 
-        when(locationStorage.save("msk", newLocation)).thenReturn(newLocation);
+        when(locationStorage.save(LOCATION_SLUG_MSK, newLocation)).thenReturn(newLocation);
 
         Location savedLocation = locationService.createLocation(newLocation);
 
@@ -89,46 +101,46 @@ public class LocationServiceImplTest {
     public void testCreateLocation_NegativeScenario() throws EntityAlreadyExistsException {
         Location newLocation = getLocation();
 
-        when(locationStorage.save("msk", newLocation))
-                .thenThrow(new EntityAlreadyExistsException("Entity already exists"));
+        when(locationStorage.save(LOCATION_SLUG_MSK, newLocation))
+                .thenThrow(new EntityAlreadyExistsException(ENTITY_ALREADY_EXISTS_MESSAGE));
 
         assertThrows(EntityAlreadyExistsException.class, () -> locationService.createLocation(newLocation));
     }
 
     @Test
     public void testUpdateLocation_PositiveScenario() {
-        Location updatedLocation = new Location("msk", "Updated Москва");
+        Location updatedLocation = createLocation(LOCATION_SLUG_MSK, UPDATED_LOCATION_NAME_MSK);
 
-        when(locationStorage.update("msk", "msk", updatedLocation)).thenReturn(updatedLocation);
+        when(locationStorage.update(LOCATION_SLUG_MSK, LOCATION_SLUG_MSK, updatedLocation)).thenReturn(updatedLocation);
 
-        Location result = locationService.updateLocation("msk", updatedLocation);
+        Location result = locationService.updateLocation(LOCATION_SLUG_MSK, updatedLocation);
 
-        assertEquals("Updated Москва", result.getName());
+        assertEquals(UPDATED_LOCATION_NAME_MSK, result.getName());
     }
 
     @Test
     public void testUpdateLocation_NegativeScenario() {
         Location updatedLocation = getLocation();
 
-        when(locationStorage.update("msk", "msk", updatedLocation))
-                .thenThrow(new EntityNotFoundException("Entity not found"));
+        when(locationStorage.update(LOCATION_SLUG_MSK, LOCATION_SLUG_MSK, updatedLocation))
+                .thenThrow(new EntityNotFoundException(ENTITY_NOT_FOUND_MESSAGE));
 
-        assertThrows(EntityNotFoundException.class, () -> locationService.updateLocation("msk", updatedLocation));
+        assertThrows(EntityNotFoundException.class, () -> locationService.updateLocation(LOCATION_SLUG_MSK, updatedLocation));
     }
 
     @Test
     public void testDeleteLocation_PositiveScenario() {
-        Mockito.doNothing().when(locationStorage).deleteById("msk");
+        Mockito.doNothing().when(locationStorage).deleteById(LOCATION_SLUG_MSK);
 
-        locationService.deleteLocation("msk");
+        locationService.deleteLocation(LOCATION_SLUG_MSK);
 
-        Mockito.verify(locationStorage, Mockito.times(1)).deleteById("msk");
+        Mockito.verify(locationStorage, Mockito.times(1)).deleteById(LOCATION_SLUG_MSK);
     }
 
     @Test
     public void testDeleteLocation_NegativeScenario() {
-        doThrow(new EntityNotFoundException("Entity not found")).when(locationStorage).deleteById("msk");
+        doThrow(new EntityNotFoundException(ENTITY_NOT_FOUND_MESSAGE)).when(locationStorage).deleteById(LOCATION_SLUG_MSK);
 
-        assertThrows(EntityNotFoundException.class, () -> locationService.deleteLocation("msk"));
+        assertThrows(EntityNotFoundException.class, () -> locationService.deleteLocation(LOCATION_SLUG_MSK));
     }
 }
