@@ -10,34 +10,48 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CategoryStorageTest {
+
+    private static final Long CATEGORY_ID_1 = 123L;
+    private static final Long CATEGORY_ID_2 = 456L;
+    private static final String CATEGORY_SLUG_1 = "airport";
+    private static final String CATEGORY_SLUG_2 = "station";
+    private static final String CATEGORY_NAME_1 = "Airport";
+    private static final String CATEGORY_NAME_2 = "Station";
+    private static final String UPDATED_CATEGORY_SLUG = "port";
+    private static final String UPDATED_CATEGORY_NAME = "Port";
+
     public CategoryStorage getCategoryStorage() {
         return new CategoryStorage();
+    }
+
+    private Category createCategory(Long id, String slug, String name) {
+        return new Category(id, slug, name);
     }
 
     @Test
     void testSaveAndFindById() {
         CategoryStorage categoryStorage = getCategoryStorage();
 
-        Category category = new Category(123L, "airports", "Аэропорты");
+        Category category = createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, CATEGORY_NAME_1);
 
-        categoryStorage.save(123L, category);
-        Category foundCategory = categoryStorage.findById(123L);
+        categoryStorage.save(CATEGORY_ID_1, category);
+        Category foundCategory = categoryStorage.findById(CATEGORY_ID_1);
 
         assertNotNull(foundCategory);
-        assertEquals(123L, foundCategory.getId());
-        assertEquals("airports", foundCategory.getSlug());
-        assertEquals("Аэропорты", foundCategory.getName());
+        assertEquals(CATEGORY_ID_1, foundCategory.getId());
+        assertEquals(CATEGORY_SLUG_1, foundCategory.getSlug());
+        assertEquals(CATEGORY_NAME_1, foundCategory.getName());
     }
 
     @Test
     void testFindAll() {
         CategoryStorage categoryStorage = getCategoryStorage();
 
-        Category category1 = new Category(1L, "airports", "Аэропорты");
-        Category category2 = new Category(2L, "stations", "Станции");
+        Category category1 = createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, CATEGORY_NAME_1);
+        Category category2 = createCategory(CATEGORY_ID_2, CATEGORY_SLUG_2, CATEGORY_NAME_2);
 
-        categoryStorage.save(1L, category1);
-        categoryStorage.save(2L, category2);
+        categoryStorage.save(CATEGORY_ID_1, category1);
+        categoryStorage.save(CATEGORY_ID_2, category2);
         List<Category> categories = categoryStorage.findAll();
 
         assertEquals(2, categories.size());
@@ -49,43 +63,43 @@ class CategoryStorageTest {
     void testUpdate() {
         CategoryStorage categoryStorage = getCategoryStorage();
 
-        Category category = new Category(123L, "airports", "Аэропорты");
-        categoryStorage.save(123L, category);
+        Category category = createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, CATEGORY_NAME_1);
+        categoryStorage.save(CATEGORY_ID_1, category);
 
-        Category updatedCategory = new Category(123L, "ports", "Порты");
+        Category updatedCategory = createCategory(CATEGORY_ID_1, UPDATED_CATEGORY_SLUG, UPDATED_CATEGORY_NAME);
 
         categoryStorage.update(updatedCategory.getId(), category.getId(), updatedCategory);
-        Category foundCategory = categoryStorage.findById(123L);
+        Category foundCategory = categoryStorage.findById(CATEGORY_ID_1);
 
         assertNotNull(foundCategory);
-        assertEquals("ports", foundCategory.getSlug());
-        assertEquals("Порты", foundCategory.getName());
+        assertEquals(UPDATED_CATEGORY_SLUG, foundCategory.getSlug());
+        assertEquals(UPDATED_CATEGORY_NAME, foundCategory.getName());
     }
 
     @Test
     void testDeleteById() {
         CategoryStorage categoryStorage = getCategoryStorage();
 
-        Category category = new Category(123L, "airports", "Аэропорты");
-        categoryStorage.save(123L, category);
+        Category category = createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, CATEGORY_NAME_1);
+        categoryStorage.save(CATEGORY_ID_1, category);
 
-        categoryStorage.deleteById(123L);
-        Category foundCategory = categoryStorage.findById(123L);
+        categoryStorage.deleteById(CATEGORY_ID_1);
+        Category foundCategory = categoryStorage.findById(CATEGORY_ID_1);
 
         assertNull(foundCategory);
     }
 
     @Test
     void testSaveDuplicateIdThrowsException() {
-        CategoryStorage categoryStorage = new CategoryStorage();
+        CategoryStorage categoryStorage = getCategoryStorage();
 
-        Category category = new Category(123L, "airports", "Аэропорты");
-        categoryStorage.save(123L, category);
+        Category category = createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, CATEGORY_NAME_1);
+        categoryStorage.save(CATEGORY_ID_1, category);
 
-        Category duplicateCategory = new Category(123L, "ports", "Порты");
+        Category duplicateCategory = createCategory(CATEGORY_ID_1, UPDATED_CATEGORY_SLUG, UPDATED_CATEGORY_NAME);
 
         assertThrows(EntityAlreadyExistsException.class, () -> {
-            categoryStorage.save(123L, duplicateCategory);
+            categoryStorage.save(CATEGORY_ID_1, duplicateCategory);
         });
     }
 
@@ -93,10 +107,10 @@ class CategoryStorageTest {
     void testUpdateWithDifferentIdsThrowsException() {
         CategoryStorage categoryStorage = getCategoryStorage();
 
-        Category category = new Category(123L, "airports", "Аэропорты");
-        categoryStorage.save(123L, category);
+        Category category = createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, CATEGORY_NAME_1);
+        categoryStorage.save(CATEGORY_ID_1, category);
 
-        Category updatedCategory = new Category(456L, "ports", "Порты");
+        Category updatedCategory = createCategory(CATEGORY_ID_2, UPDATED_CATEGORY_SLUG, UPDATED_CATEGORY_NAME);
 
         assertThrows(EntityNotFoundException.class, () -> {
             categoryStorage.update(updatedCategory.getId(), category.getId(), updatedCategory);
@@ -107,10 +121,10 @@ class CategoryStorageTest {
     void testUpdateNonExistentEntityThrowsException() {
         CategoryStorage categoryStorage = getCategoryStorage();
 
-        Category updatedCategory = new Category(123L, "ports", "Порты");
+        Category updatedCategory = createCategory(CATEGORY_ID_1, UPDATED_CATEGORY_SLUG, UPDATED_CATEGORY_NAME);
 
         assertThrows(EntityNotFoundException.class, () -> {
-            categoryStorage.update(123L, 123L, updatedCategory);
+            categoryStorage.update(CATEGORY_ID_1, CATEGORY_ID_1, updatedCategory);
         });
     }
 
@@ -119,7 +133,7 @@ class CategoryStorageTest {
         CategoryStorage categoryStorage = getCategoryStorage();
 
         assertThrows(EntityNotFoundException.class, () -> {
-            categoryStorage.deleteById(123L); // Категории с таким ID нет
+            categoryStorage.deleteById(CATEGORY_ID_1);
         });
     }
 }
