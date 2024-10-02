@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 public class LogExecutionTimeAspectTest {
+    private static final String EXPECTED_LOG_MESSAGE = "Executed method: testMethod in class: TestClassWithLogExecutionTime took";
+
 
     @Test
     public void testLogExecutionTimeAspect() throws Throwable {
@@ -26,7 +28,7 @@ public class LogExecutionTimeAspectTest {
 
             List<String> logs = logCaptor.getInfoLogs();
 
-            assertTrue(logs.stream().anyMatch(log -> log.contains("Executed method: testMethod in class: TestClassWithLogExecutionTime took")));
+            assertTrue(logs.stream().anyMatch(log -> log.contains(EXPECTED_LOG_MESSAGE)));
         }
     }
 
