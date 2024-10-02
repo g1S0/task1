@@ -12,57 +12,70 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class LocationMapperTest {
 
+    private static final String LOCATION_SLUG_1 = "msk";
+    private static final String LOCATION_SLUG_2 = "spb";
+    private static final String LOCATION_NAME_1 = "Москва";
+    private static final String LOCATION_NAME_2 = "Санкт-Петербург";
+
     private final LocationMapper locationMapper = Mappers.getMapper(LocationMapper.class);
+
+    private Location createLocation(String slug, String name) {
+        return new Location(slug, name);
+    }
+
+    private LocationDto createLocationDto(String slug, String name) {
+        return new LocationDto(slug, name);
+    }
 
     @Test
     public void testToLocationDto() {
-        Location location = new Location("msk", "Москва");
+        Location location = createLocation(LOCATION_SLUG_1, LOCATION_NAME_1);
 
         LocationDto locationDto = locationMapper.toLocationDto(location);
 
         assertNotNull(locationDto);
-        assertEquals("msk", locationDto.getSlug());
-        assertEquals("Москва", locationDto.getName());
+        assertEquals(LOCATION_SLUG_1, locationDto.getSlug());
+        assertEquals(LOCATION_NAME_1, locationDto.getName());
     }
 
     @Test
     public void testToLocation() {
-        LocationDto locationDto = new LocationDto("msk", "Москва");
+        LocationDto locationDto = createLocationDto(LOCATION_SLUG_1, LOCATION_NAME_1);
 
         Location location = locationMapper.toLocation(locationDto);
 
         assertNotNull(location);
-        assertEquals("msk", location.getSlug());
-        assertEquals("Москва", location.getName());
+        assertEquals(LOCATION_SLUG_1, location.getSlug());
+        assertEquals(LOCATION_NAME_1, location.getName());
     }
 
     @Test
     public void testToLocationDtoList() {
         List<Location> locations = List.of(
-                new Location("msk", "Москва"),
-                new Location("spb", "Санкт-Петербург")
+                createLocation(LOCATION_SLUG_1, LOCATION_NAME_1),
+                createLocation(LOCATION_SLUG_2, LOCATION_NAME_2)
         );
 
         List<LocationDto> locationDtoList = locationMapper.toLocationDtoList(locations);
 
         assertNotNull(locationDtoList);
         assertEquals(2, locationDtoList.size());
-        assertEquals("Москва", locationDtoList.get(0).getName());
-        assertEquals("Санкт-Петербург", locationDtoList.get(1).getName());
+        assertEquals(LOCATION_NAME_1, locationDtoList.get(0).getName());
+        assertEquals(LOCATION_NAME_2, locationDtoList.get(1).getName());
     }
 
     @Test
     public void testToLocationList() {
         List<LocationDto> locationDtoList = List.of(
-                new LocationDto("msk", "Москва"),
-                new LocationDto("spb", "Санкт-Петербург")
+                createLocationDto(LOCATION_SLUG_1, LOCATION_NAME_1),
+                createLocationDto(LOCATION_SLUG_2, LOCATION_NAME_2)
         );
 
         List<Location> locationList = locationMapper.toLocationList(locationDtoList);
 
         assertNotNull(locationList);
         assertEquals(2, locationList.size());
-        assertEquals("Москва", locationList.get(0).getName());
-        assertEquals("Санкт-Петербург", locationList.get(1).getName());
+        assertEquals(LOCATION_NAME_1, locationList.get(0).getName());
+        assertEquals(LOCATION_NAME_2, locationList.get(1).getName());
     }
 }
