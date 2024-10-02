@@ -22,9 +22,6 @@ import org.wiremock.integrations.testcontainers.WireMockContainer;
 
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DataSourceSuccessInitializationIT {
@@ -43,22 +40,6 @@ public class DataSourceSuccessInitializationIT {
     @LocalServerPort
     private Integer port;
 
-    private static void setDefaultCategoryStub() {
-        WireMock.stubFor(get(urlEqualTo("/place-categories/"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withBodyFile("valid_category.json")
-                        .withHeader("Content-Type", "application/json")));
-    }
-
-    private static void setDefaultLocationStub() {
-        WireMock.stubFor(get(urlEqualTo("/locations/"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withBodyFile("valid_location.json")
-                        .withHeader("Content-Type", "application/json")));
-    }
-
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("kudago.api.base-url", () -> String.format("http://%s:%d",
@@ -68,8 +49,8 @@ public class DataSourceSuccessInitializationIT {
     @BeforeAll
     static void beforeAll() {
         WireMock.configureFor(wireMock.getHost(), wireMock.getFirstMappedPort());
-        setDefaultCategoryStub();
-        setDefaultLocationStub();
+        WireMockStubManager.setDefaultCategoryStub();
+        WireMockStubManager.setDefaultLocationStub();
     }
 
     @BeforeEach
