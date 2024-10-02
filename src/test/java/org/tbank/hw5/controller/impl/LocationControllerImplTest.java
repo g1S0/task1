@@ -15,6 +15,7 @@ import org.tbank.hw5.model.Location;
 import org.tbank.hw5.service.LocationService;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -47,8 +48,8 @@ public class LocationControllerImplTest {
 
         ResponseEntity<ResponseDto<List<LocationDto>>> response = locationController.getAllLocations();
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(1, response.getBody().getData().size());
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals(1, Objects.requireNonNull(response.getBody()).getData().size());
         assertEquals("Москва", response.getBody().getData().get(0).getName());
 
         verify(locationService, times(1)).getAllLocations();
@@ -62,8 +63,8 @@ public class LocationControllerImplTest {
 
         ResponseEntity<ResponseDto<LocationDto>> response = locationController.getLocationById("msk");
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Москва", response.getBody().getData().getName());
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("Москва", Objects.requireNonNull(response.getBody()).getData().getName());
 
         verify(locationService, times(1)).getLocationById("msk");
         verify(locationMapper, times(1)).toLocationDto(any(Location.class));
@@ -77,8 +78,8 @@ public class LocationControllerImplTest {
 
         ResponseEntity<ResponseDto<LocationDto>> response = locationController.createLocation(locationDto);
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Москва", response.getBody().getData().getName());
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("Москва", Objects.requireNonNull(response.getBody()).getData().getName());
 
         verify(locationMapper, times(1)).toLocation(any(LocationDto.class));
         verify(locationService, times(1)).createLocation(any(Location.class));
@@ -93,8 +94,8 @@ public class LocationControllerImplTest {
 
         ResponseEntity<ResponseDto<LocationDto>> response = locationController.updateLocation("msk", locationDto);
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Москва", response.getBody().getData().getName());
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("Москва", Objects.requireNonNull(response.getBody()).getData().getName());
 
         verify(locationMapper, times(1)).toLocation(any(LocationDto.class));
         verify(locationService, times(1)).updateLocation(eq("msk"), any(Location.class));
@@ -105,7 +106,7 @@ public class LocationControllerImplTest {
     public void testDeleteLocation() {
         ResponseEntity<Void> response = locationController.deleteLocation("msk");
 
-        assertEquals(204, response.getStatusCodeValue());
+        assertEquals(204, response.getStatusCode().value());
 
         verify(locationService, times(1)).deleteLocation("msk");
     }
