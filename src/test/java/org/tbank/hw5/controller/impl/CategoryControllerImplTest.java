@@ -1,6 +1,5 @@
 package org.tbank.hw5.controller.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +22,12 @@ import org.tbank.hw5.service.CategoryService;
 @ExtendWith(MockitoExtension.class)
 public class CategoryControllerImplTest {
 
+    private static final Long CATEGORY_ID = 1L;
+    private static final String CATEGORY_SLUG = "slug1";
+    private static final String CATEGORY_NAME = "Category 1";
+    private static final int STATUS_OK = 200;
+    private static final int STATUS_NO_CONTENT = 204;
+
     @Mock
     private CategoryService categoryService;
 
@@ -32,14 +37,8 @@ public class CategoryControllerImplTest {
     @InjectMocks
     private CategoryControllerImpl categoryController;
 
-    private Category category;
-    private CategoryDto categoryDto;
-
-    @BeforeEach
-    void setUp() {
-        category = new Category(1L, "slug1", "Category 1");
-        categoryDto = new CategoryDto(1L, "slug1", "Category 1");
-    }
+    private final Category category = new Category(CATEGORY_ID, CATEGORY_SLUG, CATEGORY_NAME);
+    private final CategoryDto categoryDto = new CategoryDto(CATEGORY_ID, CATEGORY_SLUG, CATEGORY_NAME);
 
     @Test
     public void testGetAllCategories() {
@@ -48,9 +47,9 @@ public class CategoryControllerImplTest {
 
         ResponseEntity<ResponseDto<List<CategoryDto>>> response = categoryController.getAllCategories();
 
-        assertEquals(200, response.getStatusCode().value());
+        assertEquals(STATUS_OK, response.getStatusCode().value());
         assertEquals(1, Objects.requireNonNull(response.getBody()).getData().size());
-        assertEquals("Category 1", response.getBody().getData().get(0).getName());
+        assertEquals(CATEGORY_NAME, response.getBody().getData().get(0).getName());
 
         verify(categoryService, times(1)).getAllCategories();
         verify(categoryMapper, times(1)).toCategoryDtoList(anyList());
@@ -58,15 +57,15 @@ public class CategoryControllerImplTest {
 
     @Test
     public void testGetCategoryById() {
-        when(categoryService.getCategoryById(1L)).thenReturn(category);
+        when(categoryService.getCategoryById(CATEGORY_ID)).thenReturn(category);
         when(categoryMapper.toCategoryDto(any(Category.class))).thenReturn(categoryDto);
 
-        ResponseEntity<ResponseDto<CategoryDto>> response = categoryController.getCategoryById(1L);
+        ResponseEntity<ResponseDto<CategoryDto>> response = categoryController.getCategoryById(CATEGORY_ID);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertEquals("Category 1", Objects.requireNonNull(response.getBody()).getData().getName());
+        assertEquals(STATUS_OK, response.getStatusCode().value());
+        assertEquals(CATEGORY_NAME, Objects.requireNonNull(response.getBody()).getData().getName());
 
-        verify(categoryService, times(1)).getCategoryById(1L);
+        verify(categoryService, times(1)).getCategoryById(CATEGORY_ID);
         verify(categoryMapper, times(1)).toCategoryDto(any(Category.class));
     }
 
@@ -78,8 +77,8 @@ public class CategoryControllerImplTest {
 
         ResponseEntity<ResponseDto<CategoryDto>> response = categoryController.createCategory(categoryDto);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertEquals("Category 1", Objects.requireNonNull(response.getBody()).getData().getName());
+        assertEquals(STATUS_OK, response.getStatusCode().value());
+        assertEquals(CATEGORY_NAME, Objects.requireNonNull(response.getBody()).getData().getName());
 
         verify(categoryMapper, times(1)).toCategory(any(CategoryDto.class));
         verify(categoryService, times(1)).createCategory(any(Category.class));
@@ -89,25 +88,25 @@ public class CategoryControllerImplTest {
     @Test
     public void testUpdateCategory() {
         when(categoryMapper.toCategory(any(CategoryDto.class))).thenReturn(category);
-        when(categoryService.updateCategory(eq(1L), any(Category.class))).thenReturn(category);
+        when(categoryService.updateCategory(eq(CATEGORY_ID), any(Category.class))).thenReturn(category);
         when(categoryMapper.toCategoryDto(any(Category.class))).thenReturn(categoryDto);
 
-        ResponseEntity<ResponseDto<CategoryDto>> response = categoryController.updateCategory(1L, categoryDto);
+        ResponseEntity<ResponseDto<CategoryDto>> response = categoryController.updateCategory(CATEGORY_ID, categoryDto);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertEquals("Category 1", Objects.requireNonNull(response.getBody()).getData().getName());
+        assertEquals(STATUS_OK, response.getStatusCode().value());
+        assertEquals(CATEGORY_NAME, Objects.requireNonNull(response.getBody()).getData().getName());
 
         verify(categoryMapper, times(1)).toCategory(any(CategoryDto.class));
-        verify(categoryService, times(1)).updateCategory(eq(1L), any(Category.class));
+        verify(categoryService, times(1)).updateCategory(eq(CATEGORY_ID), any(Category.class));
         verify(categoryMapper, times(1)).toCategoryDto(any(Category.class));
     }
 
     @Test
     public void testDeleteCategory() {
-        ResponseEntity<Void> response = categoryController.deleteCategory(1L);
+        ResponseEntity<Void> response = categoryController.deleteCategory(CATEGORY_ID);
 
-        assertEquals(204, response.getStatusCode().value());
+        assertEquals(STATUS_NO_CONTENT, response.getStatusCode().value());
 
-        verify(categoryService, times(1)).deleteCategory(1L);
+        verify(categoryService, times(1)).deleteCategory(CATEGORY_ID);
     }
 }
