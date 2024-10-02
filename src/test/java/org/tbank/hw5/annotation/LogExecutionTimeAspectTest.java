@@ -16,18 +16,18 @@ public class LogExecutionTimeAspectTest {
 
     @Test
     public void testLogExecutionTimeAspect() throws Throwable {
-        LogCaptor logCaptor = LogCaptor.forClass(LogExecutionTimeAspect.class);
+        try (LogCaptor logCaptor = LogCaptor.forClass(LogExecutionTimeAspect.class)) {
+            AspectJProxyFactory factory = new AspectJProxyFactory(new TestClassWithLogExecutionTime());
+            LogExecutionTimeAspect logExecutionTimeAspect = new LogExecutionTimeAspect();
+            factory.addAspect(logExecutionTimeAspect);
+            TestClassWithLogExecutionTime proxy = factory.getProxy();
 
-        AspectJProxyFactory factory = new AspectJProxyFactory(new TestClassWithLogExecutionTime());
-        LogExecutionTimeAspect logExecutionTimeAspect = new LogExecutionTimeAspect();
-        factory.addAspect(logExecutionTimeAspect);
-        TestClassWithLogExecutionTime proxy = factory.getProxy();
+            proxy.testMethod();
 
-        proxy.testMethod();
+            List<String> logs = logCaptor.getInfoLogs();
 
-        List<String> logs = logCaptor.getInfoLogs();
-
-        assertTrue(logs.stream().anyMatch(log -> log.contains("Executed method: testMethod in class: TestClassWithLogExecutionTime took")));
+            assertTrue(logs.stream().anyMatch(log -> log.contains("Executed method: testMethod in class: TestClassWithLogExecutionTime took")));
+        }
     }
 
     public static class TestClassWithLogExecutionTime {
