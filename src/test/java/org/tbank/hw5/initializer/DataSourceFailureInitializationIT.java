@@ -49,12 +49,11 @@ class DataSourceFailureInitializationIT {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        WireMock.reset();
     }
 
     @Test
     void shouldThrowExceptionOnInvalidLocationData() {
-        WireMock.reset();
-
         WireMockStubManager.setInvalidLocationStub();
 
         Assertions.assertThrows(IllegalStateException.class, () -> {
@@ -64,8 +63,6 @@ class DataSourceFailureInitializationIT {
 
     @Test
     void shouldThrowExceptionOnInvalidCategoryData() {
-        WireMock.reset();
-
         WireMockStubManager.setInvalidCategoryStub();
 
         Assertions.assertThrows(IllegalStateException.class, () -> {
