@@ -78,7 +78,7 @@ class DataSourceFailureInitializationIT {
     }
 
     @Test
-    void shouldGetLocations() {
+    void shouldThrowExceptionOnInvalidLocationData() {
         WireMock.reset();
 
         setInvalidLocationStub();
@@ -97,7 +97,7 @@ class DataSourceFailureInitializationIT {
     }
 
     @Test
-    void shouldGetCategories() {
+    void shouldThrowExceptionOnInvalidCategoryData() {
         WireMock.reset();
 
         setInvalidCategoryStub();
