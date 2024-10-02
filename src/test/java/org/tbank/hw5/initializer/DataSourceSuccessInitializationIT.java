@@ -17,7 +17,6 @@ import org.tbank.hw5.storage.impl.CategoryStorage;
 import org.tbank.hw5.storage.impl.LocationStorage;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.MountableFile;
 import org.wiremock.integrations.testcontainers.WireMockContainer;
 
 import java.util.List;
@@ -32,18 +31,14 @@ public class DataSourceSuccessInitializationIT {
     private CategoryStorage categoryStorage;
 
     @Container
-    static WireMockContainer wireMock = new WireMockContainer("wiremock/wiremock:3.6.0")
-            .withCopyFileToContainer(
-                    MountableFile.forHostPath("src/test/resources/wiremock/json"),
-                    "/home/wiremock/./__files");
+    static WireMockContainer wireMock = WireMockManager.createContainer();
 
     @LocalServerPort
     private Integer port;
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("kudago.api.base-url", () -> String.format("http://%s:%d",
-                wireMock.getHost(), wireMock.getFirstMappedPort()));
+        WireMockManager.setPropertiesPath(registry, wireMock);
     }
 
     @BeforeAll

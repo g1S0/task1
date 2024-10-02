@@ -12,17 +12,13 @@ import org.tbank.hw5.client.CategoryApiClient;
 import org.tbank.hw5.client.LocationApiClient;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.MountableFile;
 import org.wiremock.integrations.testcontainers.WireMockContainer;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class DataSourceFailureInitializationIT {
     @Container
-    static WireMockContainer wireMock = new WireMockContainer("wiremock/wiremock:3.6.0")
-            .withCopyFileToContainer(
-                    MountableFile.forHostPath("src/test/resources/wiremock/json"),
-                    "/home/wiremock/./__files");
+    static WireMockContainer wireMock = WireMockManager.createContainer();
 
     @LocalServerPort
     private Integer port;
@@ -35,8 +31,7 @@ class DataSourceFailureInitializationIT {
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("kudago.api.base-url", () -> String.format("http://%s:%d",
-                wireMock.getHost(), wireMock.getFirstMappedPort()));
+        WireMockManager.setPropertiesPath(registry, wireMock);
     }
 
     @BeforeAll
