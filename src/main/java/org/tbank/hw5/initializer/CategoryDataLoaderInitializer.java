@@ -1,11 +1,11 @@
 package org.tbank.hw5.initializer;
 
+import org.example.annotation.LogExecutionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.tbank.hw5.annotation.LogExecutionTime;
 import org.tbank.hw5.client.CategoryApiClient;
 import org.tbank.hw5.dto.CategoryDto;
 import org.tbank.hw5.mapper.CategoryMapper;
