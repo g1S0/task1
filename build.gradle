@@ -1,11 +1,14 @@
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group 'org.tbank'
 version '1.0-SNAPSHOT'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 sourceSets {
@@ -33,6 +36,22 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
 
     implementation 'ch.qos.logback:logback-classic:1.4.14'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    implementation 'org.aspectj:aspectjweaver'
+
+    implementation 'org.example:annotation-starter:1.0-SNAPSHOT'
 }
 
 test {
