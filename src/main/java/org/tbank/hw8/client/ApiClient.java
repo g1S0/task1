@@ -39,7 +39,7 @@ public class ApiClient {
                 throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Currencies are empty");
             }
 
-            return Collections.emptyList();
+            return valCurs.getValutes();
         } catch (RestClientException e) {
             logger.error("Unexpected error while calling the currency service: {}", e.getMessage());
             throw new RuntimeException("Failed to fetch currency rates due to unexpected error.", e);
