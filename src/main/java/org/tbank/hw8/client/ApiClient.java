@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import org.springframework.http.HttpStatusCode;
 import org.tbank.hw8.exception.ServiceUnavailableException;
 import org.tbank.hw8.model.Valute;
 import org.slf4j.Logger;
@@ -29,10 +28,6 @@ public class ApiClient {
             ValCurs valCurs = restClient.get()
                     .uri("/XML_daily.asp")
                     .retrieve()
-                    .onStatus(HttpStatusCode::is5xxServerError, (response, request) -> {
-                        logger.error("Error response from currency API: {}", response);
-                        throw new ServiceUnavailableException("Currency service is unavailable. Retry after 1 hour.");
-                    })
                     .body(ValCurs.class);
 
             if (valCurs == null) {
@@ -41,8 +36,8 @@ public class ApiClient {
 
             return valCurs.getValutes();
         } catch (RestClientException e) {
-            logger.error("Unexpected error while calling the currency service: {}", e.getMessage());
-            throw new RuntimeException("Failed to fetch currency rates due to unexpected error.", e);
+            logger.error("Error response from currency API: {}", e.getMessage());
+            throw new ServiceUnavailableException("Currency service is unavailable. Retry after 1 hour.");
         } catch (Exception e) {
             logger.error("An unexpected error occurred: {}", e.getMessage());
             throw new RuntimeException("An unexpected error occurred while fetching currency rates.", e);
@@ -52,5 +47,4 @@ public class ApiClient {
     public List<Valute> returnEmptyValuteList(Throwable throwable) {
         return Collections.emptyList();
     }
-
 }
