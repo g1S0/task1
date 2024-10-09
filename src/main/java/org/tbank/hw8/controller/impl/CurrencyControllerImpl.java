@@ -1,6 +1,11 @@
 package org.tbank.hw8.controller.impl;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbank.hw8.controller.CurrencyController;
 import org.tbank.hw8.dto.ConvertedAmountDto;
@@ -15,12 +20,15 @@ public class CurrencyControllerImpl implements CurrencyController {
     private final CurrencyService currencyService;
 
     @Override
-    public CurrencyRateDto getCurrencyRate(String code) {
-        return currencyService.getCurrencyRate(code);
+    public ResponseEntity<CurrencyRateDto> getCurrencyRate(String code) {
+        final CurrencyRateDto currencyRate = currencyService.getCurrencyRate(code);
+        return new ResponseEntity<>(currencyRate, HttpStatus.OK);
     }
 
     @Override
-    public ConvertedAmountDto convertCurrency(CurrencyConversionRequestDto request) {
-        return currencyService.convertCurrency(request);
+    public ResponseEntity<ConvertedAmountDto> convertCurrency(CurrencyConversionRequestDto request) {
+        final ConvertedAmountDto convertedAmountDto = currencyService.convertCurrency(request);
+        return new ResponseEntity<>(convertedAmountDto, HttpStatus.OK);
+
     }
 }

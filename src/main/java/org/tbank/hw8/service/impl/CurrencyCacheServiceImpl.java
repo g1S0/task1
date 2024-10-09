@@ -21,7 +21,6 @@ public class CurrencyCacheServiceImpl implements CurrencyCachesService {
     @Override
     @Cacheable("currencyRate")
     public CurrencyRateDto getCurrencyRate(String code) {
-        System.out.println("Get currency rate");
         if (!isCurrencyValid(code)) {
             throw new UnsupportedCurrencyException("Currency code does not exist: " + code);
         }
