@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.tbank.hw8.dto.ConvertedAmountDto;
 import org.tbank.hw8.dto.CurrencyConversionRequestDto;
 import org.tbank.hw8.dto.CurrencyRateDto;
-import org.tbank.hw8.service.CurrencyCachesService;
+import org.tbank.hw8.service.CurrencyCacheService;
 import org.tbank.hw8.service.CurrencyService;
 
 
@@ -13,7 +13,7 @@ import org.tbank.hw8.service.CurrencyService;
 @AllArgsConstructor
 public class CurrencyServiceImpl implements CurrencyService {
 
-    private final CurrencyCachesService currencyCachesService;
+    private final CurrencyCacheService currencyCachesService;
 
     @Override
     public CurrencyRateDto getCurrencyRate(String code) {

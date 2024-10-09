@@ -8,14 +8,14 @@ import org.tbank.hw8.dto.CurrencyRateDto;
 import org.tbank.hw8.exception.CurrencyIsNotSupportedByCbException;
 import org.tbank.hw8.exception.UnsupportedCurrencyException;
 import org.tbank.hw8.model.Valute;
-import org.tbank.hw8.service.CurrencyCachesService;
+import org.tbank.hw8.service.CurrencyCacheService;
 
 import java.util.Currency;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class CurrencyCacheServiceImpl implements CurrencyCachesService {
+public class CurrencyCacheServiceImpl implements CurrencyCacheService {
     private final ApiClient apiClient;
 
     @Override
