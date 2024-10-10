@@ -2,16 +2,16 @@ package org.tbank.hw8.client;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.tbank.hw8.exception.ServiceUnavailableException;
-import org.tbank.hw8.model.Valute;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tbank.hw8.model.ValCurs;
+import org.tbank.hw8.model.Valute;
 
 import java.util.List;
 
@@ -24,6 +24,8 @@ public class ApiClient {
     @CircuitBreaker(name = "currencyApiCircuitBreaker", fallbackMethod = "handleFallback")
     public List<Valute> fetchCurrencyRates() {
         try {
+            logger.info("Fetching currency rate");
+
             ValCurs valCurs = restClient.get()
                     .uri("/XML_daily.asp")
                     .retrieve()
@@ -32,6 +34,8 @@ public class ApiClient {
             if (valCurs == null) {
                 throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Currencies are empty");
             }
+
+            logger.info("Successfully fetched currency rates from API");
 
             return valCurs.getValutes();
         } catch (RestClientException e) {
