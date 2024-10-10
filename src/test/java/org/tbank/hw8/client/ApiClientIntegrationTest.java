@@ -14,14 +14,14 @@ import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.tbank.hw8.exception.ServiceUnavailableException;
 import org.tbank.hw8.model.Valute;
 
 import java.util.List;
 import java.util.Objects;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -83,9 +83,7 @@ public class ApiClientIntegrationTest {
                         .withHeader("Content-Type", "application/xml")
                         .withBody("Internal Server Error")));
 
-        List<Valute> result = apiClient.fetchCurrencyRates();
-
-        assertTrue(result.isEmpty());
+        assertThrows(ServiceUnavailableException.class, () -> apiClient.fetchCurrencyRates());
     }
 
     @Test
@@ -97,7 +95,10 @@ public class ApiClientIntegrationTest {
                         .withBody("Internal Server Error")));
 
         for (int i = 0; i < 5; i++) {
-            apiClient.fetchCurrencyRates();
+            try {
+                apiClient.fetchCurrencyRates();
+            } catch (Exception ignored) {
+            }
         }
 
         CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("currencyApiCircuitBreaker");
@@ -113,7 +114,10 @@ public class ApiClientIntegrationTest {
                         .withBody("Internal Server Error")));
 
         for (int i = 0; i < 5; i++) {
-            apiClient.fetchCurrencyRates();
+            try {
+                apiClient.fetchCurrencyRates();
+            } catch (Exception ignored) {
+            }
         }
 
         CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("currencyApiCircuitBreaker");
@@ -131,8 +135,11 @@ public class ApiClientIntegrationTest {
             throw new RuntimeException(e);
         }
 
-        apiClient.fetchCurrencyRates();
+        List<Valute> result = apiClient.fetchCurrencyRates();
 
         assertTrue(circuitBreaker.getState() == CircuitBreaker.State.HALF_OPEN || circuitBreaker.getState() == CircuitBreaker.State.CLOSED);
+        assertEquals(2, result.size());
+        assertEquals("USD", result.get(0).getCharCode());
+        assertEquals("EUR", result.get(1).getCharCode());
     }
 }
