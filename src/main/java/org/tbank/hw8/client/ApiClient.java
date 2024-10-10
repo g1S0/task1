@@ -22,7 +22,7 @@ public class ApiClient {
     private final RestClient restClient;
     private static final Logger logger = LoggerFactory.getLogger(ApiClient.class);
 
-    @CircuitBreaker(name = "currencyApiCircuitBreaker", fallbackMethod = "returnEmptyValuteList")
+    @CircuitBreaker(name = "currencyApiCircuitBreaker", fallbackMethod = "handleFallback")
     public List<Valute> fetchCurrencyRates() {
         try {
             ValCurs valCurs = restClient.get()
@@ -44,7 +44,9 @@ public class ApiClient {
         }
     }
 
-    public List<Valute> returnEmptyValuteList(Throwable throwable) {
-        return Collections.emptyList();
+    public void handleFallback(Throwable throwable) throws Throwable {
+        logger.error("Circuit breaker fallback triggered due to: {}", throwable.getMessage());
+
+        throw throwable;
     }
 }
