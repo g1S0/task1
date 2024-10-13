@@ -49,7 +49,6 @@ public class ApiClient {
 
     public void handleFallback(Throwable throwable) throws Throwable {
         logger.error("Circuit breaker fallback triggered due to: {}", throwable.getMessage());
-
         throw throwable;
     }
 }
