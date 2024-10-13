@@ -18,8 +18,9 @@ import java.util.List;
 @Component
 @AllArgsConstructor
 public class CurrencyApiClient {
-    private final RestClient restClient;
+    private static final String CURRENCY_API_URI = "/XML_daily.asp";
     private static final Logger logger = LoggerFactory.getLogger(CurrencyApiClient.class);
+    private final RestClient restClient;
 
     @CircuitBreaker(name = "currencyApiCircuitBreaker", fallbackMethod = "handleFallback")
     public List<Valute> fetchCurrencyRates() {
@@ -27,7 +28,7 @@ public class CurrencyApiClient {
             logger.info("Fetching currency rate");
 
             ValCurs valCurs = restClient.get()
-                    .uri("/XML_daily.asp")
+                    .uri(CURRENCY_API_URI)
                     .retrieve()
                     .body(ValCurs.class);
 
@@ -47,7 +48,7 @@ public class CurrencyApiClient {
         }
     }
 
-    public void handleFallback(Throwable throwable) throws Throwable {
+    public List<Valute> handleFallback(Throwable throwable) throws Throwable {
         logger.error("Circuit breaker fallback triggered due to: {}", throwable.getMessage());
         throw throwable;
     }
