@@ -48,15 +48,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CustomErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());
         });
-
         String firstErrorMessage = errors.values().stream().findFirst().orElse("Validation error");
-
         CustomErrorResponse response = new CustomErrorResponse(firstErrorMessage, HttpStatus.BAD_REQUEST.value());
-
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
