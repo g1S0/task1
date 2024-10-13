@@ -1,8 +1,7 @@
 package org.tbank.hw8.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tbank.hw8.client.CurrencyApiClient;
 import org.tbank.hw8.dto.ConvertedAmountDto;
@@ -18,14 +17,14 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CurrencyServiceImpl implements CurrencyService {
 
-    private static final Logger logger = LoggerFactory.getLogger(CurrencyServiceImpl.class);
     private final CurrencyApiClient currencyApiClient;
 
     public CurrencyRateDto getCurrencyRate(String code) {
         if (!isCurrencyValid(code)) {
-            logger.warn("Invalid currency code: {}", code);
+            log.warn("Invalid currency code: {}", code);
             throw new UnsupportedCurrencyException("Currency code does not exist: " + code);
         }
 
@@ -35,12 +34,12 @@ public class CurrencyServiceImpl implements CurrencyService {
                 .filter(valute -> valute.getCharCode().equalsIgnoreCase(code))
                 .findFirst()
                 .orElseThrow(() -> {
-                    logger.error("Currency {} is not supported by Central Bank", code);
+                    log.error("Currency {} is not supported by Central Bank", code);
                     return new CurrencyIsNotSupportedByCbException("Currency is not supported by Central Bank");
                 });
 
         final double value = Double.parseDouble(foundValute.getValue().replace(",", "."));
-        logger.info("Currency rate for {} is {}", code, value);
+        log.info("Currency rate for {} is {}", code, value);
 
         return new CurrencyRateDto(code, value);
     }
@@ -48,7 +47,7 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Override
     public ConvertedAmountDto convertCurrency(CurrencyConversionRequestDto conversionRequestInfo) {
 
-        logger.info("Converting currency from {} to {} with amount: {}",
+        log.info("Converting currency from {} to {} with amount: {}",
                 conversionRequestInfo.getFromCurrency(),
                 conversionRequestInfo.getToCurrency(),
                 conversionRequestInfo.getAmount());
@@ -57,7 +56,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         CurrencyRateDto toCurrencyRate = getCurrencyRate(conversionRequestInfo.getToCurrency());
         double convertedAmount = conversionRequestInfo.getAmount() * (fromCurrencyRate.getRate() / toCurrencyRate.getRate());
 
-        logger.info("Successfully converted {} {} to {} {}",
+        log.info("Successfully converted {} {} to {} {}",
                 conversionRequestInfo.getAmount(),
                 conversionRequestInfo.getFromCurrency(),
                 convertedAmount,
@@ -74,7 +73,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         try {
             return Currency.getAvailableCurrencies().contains(Currency.getInstance(code.toUpperCase()));
         } catch (IllegalArgumentException e) {
-            logger.warn("Currency code {} is not valid", code);
+            log.warn("Currency code {} is not valid", code);
             return false;
         }
     }
