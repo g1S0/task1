@@ -30,7 +30,7 @@ public class ApiClientIntegrationTest {
     private WireMockServer wireMockServer;
 
     @Autowired
-    private ApiClient apiClient;
+    private CurrencyApiClient apiClient;
 
     @Autowired
     private CircuitBreakerRegistry circuitBreakerRegistry;

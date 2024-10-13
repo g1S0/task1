@@ -17,9 +17,9 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class ApiClient {
+public class CurrencyApiClient {
     private final RestClient restClient;
-    private static final Logger logger = LoggerFactory.getLogger(ApiClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(CurrencyApiClient.class);
 
     @CircuitBreaker(name = "currencyApiCircuitBreaker", fallbackMethod = "handleFallback")
     public List<Valute> fetchCurrencyRates() {

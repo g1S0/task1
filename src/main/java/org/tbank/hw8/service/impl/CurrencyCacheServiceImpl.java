@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.tbank.hw8.client.ApiClient;
+import org.tbank.hw8.client.CurrencyApiClient;
 import org.tbank.hw8.dto.CurrencyRateDto;
 import org.tbank.hw8.exception.CurrencyIsNotSupportedByCbException;
 import org.tbank.hw8.exception.UnsupportedCurrencyException;
@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CurrencyCacheServiceImpl implements CurrencyCacheService {
     private static final Logger logger = LoggerFactory.getLogger(CurrencyCacheServiceImpl.class);
-    private final ApiClient apiClient;
+    private final CurrencyApiClient apiClient;
 
     @Override
     @Cacheable("currencyRate")
