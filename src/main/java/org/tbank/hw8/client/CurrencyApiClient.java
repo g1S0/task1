@@ -4,6 +4,7 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
@@ -23,6 +24,7 @@ public class CurrencyApiClient {
     private final RestClient restClient;
 
     @CircuitBreaker(name = "currencyApiCircuitBreaker", fallbackMethod = "handleFallback")
+    @Cacheable("currencyRate")
     public List<Valute> fetchCurrencyRates() {
         try {
             logger.info("Fetching currency rate");
