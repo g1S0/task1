@@ -3,8 +3,6 @@ package org.tbank.hw5.initializer;
 import org.example.annotation.LogExecutionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.tbank.hw5.client.CategoryApiClient;
 import org.tbank.hw5.dto.CategoryDto;
@@ -28,7 +26,6 @@ public class CategoryDataLoaderInitializer {
         this.categoryMapper = categoryMapper;
     }
 
-    @EventListener(ApplicationReadyEvent.class)
     @LogExecutionTime
     public void initializeCategories() {
         logger.info("Starting data source for categories");
@@ -36,7 +33,7 @@ public class CategoryDataLoaderInitializer {
         List<CategoryDto> categoriesDto = categoryApiClient.fetchCategories();
 
         List<Category> categories = categoryMapper.toCategoryList(categoriesDto);
-
+        categoryStorage.clear();
         if (categories != null) {
             for (Category category : categories) {
                 categoryStorage.save(category.getId(), category);

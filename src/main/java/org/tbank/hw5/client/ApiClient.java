@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -39,7 +40,8 @@ public abstract class ApiClient<T> {
         } catch (Exception e) {
             logger.error("Error occurred while fetching {} from API at {}. Message: {}",
                     responseType.getSimpleName(), apiUrl, e.getMessage());
-            throw new IllegalStateException("Failed to fetch " + responseType.getSimpleName() + " from API at " + apiUrl, e);
+
+            return Collections.emptyList();
         }
     }
 }

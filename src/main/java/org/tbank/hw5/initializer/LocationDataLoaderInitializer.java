@@ -1,14 +1,12 @@
 package org.tbank.hw5.initializer;
 
 import org.example.annotation.LogExecutionTime;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tbank.hw5.client.LocationApiClient;
 import org.tbank.hw5.dto.LocationDto;
 import org.tbank.hw5.mapper.LocationMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tbank.hw5.model.Location;
 import org.tbank.hw5.storage.impl.LocationStorage;
 
@@ -29,15 +27,14 @@ public class LocationDataLoaderInitializer {
     }
 
 
-    @EventListener(ApplicationReadyEvent.class)
     @LogExecutionTime
-    public void initializeCategories() {
+    public void initializeLocations() {
         logger.info("Starting location data source for locations");
 
         List<LocationDto> locationsDto = locationApiClient.fetchLocations();
 
         List<Location> locations = locationMapper.toLocationList(locationsDto);
-
+        locationStorage.clear();
         if (locations != null) {
             for (Location location : locations) {
                 locationStorage.save(location.getSlug(), location);

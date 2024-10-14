@@ -2,7 +2,7 @@
   {
     "id": 1,
     "slug": "airports",
-    "name": "Airports"
+    "name: "Airports"
   },
   {
     "error": "invalid json here"
