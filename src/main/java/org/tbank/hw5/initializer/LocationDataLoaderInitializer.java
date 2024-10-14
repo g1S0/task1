@@ -1,8 +1,7 @@
 package org.tbank.hw5.initializer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.annotation.LogExecutionTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tbank.hw5.client.LocationApiClient;
 import org.tbank.hw5.dto.LocationDto;
@@ -13,9 +12,8 @@ import org.tbank.hw5.storage.impl.LocationStorage;
 import java.util.List;
 
 @Component
+@Slf4j
 public class LocationDataLoaderInitializer {
-    private static final Logger logger = LoggerFactory.getLogger(LocationDataLoaderInitializer.class);
-
     private final LocationApiClient locationApiClient;
     private final LocationStorage locationStorage;
     private final LocationMapper locationMapper;
@@ -29,7 +27,7 @@ public class LocationDataLoaderInitializer {
 
     @LogExecutionTime
     public void initializeLocations() {
-        logger.info("Starting location data source for locations");
+        log.info("Starting location data source for locations");
 
         List<LocationDto> locationsDto = locationApiClient.fetchLocations();
 
@@ -39,11 +37,11 @@ public class LocationDataLoaderInitializer {
             for (Location location : locations) {
                 locationStorage.save(location.getSlug(), location);
             }
-            logger.info("Location data source successfully initialized with {} locations.", locations.size());
+            log.info("Location data source successfully initialized with {} locations.", locations.size());
         } else {
-            logger.warn("No locations found to initialize data source.");
+            log.warn("No locations found to initialize data source.");
         }
 
-        logger.info("Location data source initialization completed.");
+        log.info("Location data source initialization completed.");
     }
 }
