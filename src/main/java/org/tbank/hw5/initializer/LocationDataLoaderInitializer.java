@@ -1,9 +1,9 @@
 package org.tbank.hw5.initializer;
 
+import org.example.annotation.LogExecutionTime;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.tbank.hw5.annotation.LogExecutionTime;
 import org.tbank.hw5.client.LocationApiClient;
 import org.tbank.hw5.dto.LocationDto;
 import org.tbank.hw5.mapper.LocationMapper;

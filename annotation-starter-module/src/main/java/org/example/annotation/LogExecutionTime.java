@@ -1,4 +1,4 @@
-package org.tbank.hw5.annotation;
+package org.example.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

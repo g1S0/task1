@@ -9,6 +9,7 @@ group 'org.tbank'
 version '1.0-SNAPSHOT'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 sourceSets {
@@ -43,8 +44,8 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    implementation 'org.projectlombok:lombok:1.18.28'
-    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    implementation 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
@@ -52,6 +53,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
     implementation 'org.aspectj:aspectjweaver'
+
+    implementation 'org.example:annotation-starter:1.0-SNAPSHOT'
     testImplementation 'io.github.hakky54:logcaptor:2.9.3'
 
     testImplementation "org.testcontainers:testcontainers:1.20.2"

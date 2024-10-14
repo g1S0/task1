@@ -1,14 +1,12 @@
-package org.tbank.hw5.annotation;
+package org.example.annotation;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 @Aspect
-@Component
 public class LogExecutionTimeAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(LogExecutionTimeAspect.class);
@@ -20,7 +18,6 @@ public class LogExecutionTimeAspect {
         Object proceed = joinPoint.proceed();
 
         long executionTime = System.currentTimeMillis() - start;
-
         logger.info("Executed method: {} in class: {} took: {} ms",
                 joinPoint.getSignature().getName(),
                 joinPoint.getTarget().getClass().getSimpleName(),

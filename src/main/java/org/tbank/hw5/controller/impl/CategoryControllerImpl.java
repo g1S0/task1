@@ -1,8 +1,8 @@
 package org.tbank.hw5.controller.impl;
 
+import org.example.annotation.LogExecutionTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import org.tbank.hw5.annotation.LogExecutionTime;
 import org.tbank.hw5.controller.CategoryController;
 import org.tbank.hw5.dto.CategoryDto;
 import org.tbank.hw5.dto.ResponseDto;
