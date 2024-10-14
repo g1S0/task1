@@ -13,6 +13,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+import org.tbank.hw5.controller.CategoryController;
 import org.tbank.hw5.dto.CategoryDto;
 import org.tbank.hw5.dto.ResponseDto;
 import org.tbank.hw5.mapper.CategoryMapper;
@@ -35,7 +36,7 @@ public class CategoryControllerImplTest {
     private CategoryMapper categoryMapper;
 
     @InjectMocks
-    private CategoryControllerImpl categoryController;
+    private CategoryController categoryController;
 
     private final Category category = new Category(CATEGORY_ID, CATEGORY_SLUG, CATEGORY_NAME);
     private final CategoryDto categoryDto = new CategoryDto(CATEGORY_ID, CATEGORY_SLUG, CATEGORY_NAME);
