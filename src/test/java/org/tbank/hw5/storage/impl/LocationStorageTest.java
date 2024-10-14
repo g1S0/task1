@@ -11,33 +11,43 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LocationStorageTest {
 
+    private static final String LOCATION_SLUG_EKB = "ekb";
+    private static final String LOCATION_SLUG_SPB = "spb";
+    private static final String LOCATION_NAME_EKB = "Екатеринбург";
+    private static final String UPDATED_LOCATION_NAME_KRD = "Краснодар";
+    private static final String LOCATION_NAME_SPB = "Санкт-Петербург";
+
     public LocationStorage getLocationStorage() {
         return new LocationStorage();
+    }
+
+    private Location createLocation(String slug, String name) {
+        return new Location(slug, name);
     }
 
     @Test
     void testSaveAndFindById() {
         LocationStorage locationStorage = getLocationStorage();
 
-        Location location = new Location("ekb", "Екатеринбург");
+        Location location = createLocation(LOCATION_SLUG_EKB, LOCATION_NAME_EKB);
 
-        locationStorage.save("ekb", location);
-        Location foundLocation = locationStorage.findById("ekb");
+        locationStorage.save(LOCATION_SLUG_EKB, location);
+        Location foundLocation = locationStorage.findById(LOCATION_SLUG_EKB);
 
         assertNotNull(foundLocation);
-        assertEquals("ekb", foundLocation.getSlug());
-        assertEquals("Екатеринбург", foundLocation.getName());
+        assertEquals(LOCATION_SLUG_EKB, foundLocation.getSlug());
+        assertEquals(LOCATION_NAME_EKB, foundLocation.getName());
     }
 
     @Test
     void testFindAll() {
         LocationStorage locationStorage = getLocationStorage();
 
-        Location location1 = new Location("ekb", "Екатеринбург");
-        Location location2 = new Location("spb", "Санкт-Петербург");
+        Location location1 = createLocation(LOCATION_SLUG_EKB, LOCATION_NAME_EKB);
+        Location location2 = createLocation(LOCATION_SLUG_SPB, LOCATION_NAME_SPB);
 
-        locationStorage.save("ekb", location1);
-        locationStorage.save("spb", location2);
+        locationStorage.save(LOCATION_SLUG_EKB, location1);
+        locationStorage.save(LOCATION_SLUG_SPB, location2);
         List<Location> locations = locationStorage.findAll();
 
         assertEquals(2, locations.size());
@@ -49,42 +59,42 @@ class LocationStorageTest {
     void testUpdate() {
         LocationStorage locationStorage = getLocationStorage();
 
-        Location location = new Location("ekb", "Екатеринбург");
-        locationStorage.save("ekb", location);
+        Location location = createLocation(LOCATION_SLUG_EKB, LOCATION_NAME_EKB);
+        locationStorage.save(LOCATION_SLUG_EKB, location);
 
-        Location updatedLocation = new Location("ekb", "Екатеринабург");
-        locationStorage.update("ekb", updatedLocation.getSlug(), updatedLocation);
-        Location foundLocation = locationStorage.findById("ekb");
+        Location updatedLocation = createLocation(LOCATION_SLUG_EKB, UPDATED_LOCATION_NAME_KRD);
+        locationStorage.update(LOCATION_SLUG_EKB, updatedLocation.getSlug(), updatedLocation);
+        Location foundLocation = locationStorage.findById(LOCATION_SLUG_EKB);
 
         assertNotNull(foundLocation);
-        assertEquals("ekb", foundLocation.getSlug());
-        assertEquals("Екатеринабург", foundLocation.getName());
+        assertEquals(LOCATION_SLUG_EKB, foundLocation.getSlug());
+        assertEquals(UPDATED_LOCATION_NAME_KRD, foundLocation.getName());
     }
 
     @Test
     void testDeleteById() {
         LocationStorage locationStorage = getLocationStorage();
 
-        Location location = new Location("ekb", "Екатеринбург");
-        locationStorage.save("ekb", location);
+        Location location = createLocation(LOCATION_SLUG_EKB, LOCATION_NAME_EKB);
+        locationStorage.save(LOCATION_SLUG_EKB, location);
 
-        locationStorage.deleteById("ekb");
-        Location foundLocation = locationStorage.findById("ekb");
+        locationStorage.deleteById(LOCATION_SLUG_EKB);
+        Location foundLocation = locationStorage.findById(LOCATION_SLUG_EKB);
 
         assertNull(foundLocation);
     }
 
     @Test
     void testSaveDuplicateIdThrowsException() {
-        LocationStorage locationStorage = new LocationStorage();
+        LocationStorage locationStorage = getLocationStorage();
 
-        Location location = new Location("ekb", "Екатеринбург");
-        locationStorage.save("ekb", location);
+        Location location = createLocation(LOCATION_SLUG_EKB, LOCATION_NAME_EKB);
+        locationStorage.save(LOCATION_SLUG_EKB, location);
 
-        Location duplicateLocation = new Location("ekb", "Екатеринабург");
+        Location duplicateLocation = createLocation(LOCATION_SLUG_EKB, UPDATED_LOCATION_NAME_KRD);
 
         assertThrows(EntityAlreadyExistsException.class, () -> {
-            locationStorage.save("ekb", duplicateLocation);
+            locationStorage.save(LOCATION_SLUG_EKB, duplicateLocation);
         });
     }
 
@@ -92,10 +102,10 @@ class LocationStorageTest {
     void testUpdateWithDifferentIdsThrowsException() {
         LocationStorage locationStorage = getLocationStorage();
 
-        Location location = new Location("ekb", "Екатеринбург");
-        locationStorage.save("ekb", location);
+        Location location = createLocation(LOCATION_SLUG_EKB, LOCATION_NAME_EKB);
+        locationStorage.save(LOCATION_SLUG_EKB, location);
 
-        Location updatedLocation = new Location("spb", "Санкт-Петербург");
+        Location updatedLocation = createLocation(LOCATION_SLUG_SPB, LOCATION_NAME_SPB);
 
         assertThrows(EntityNotFoundException.class, () -> {
             locationStorage.update(updatedLocation.getSlug(), location.getSlug(), updatedLocation);
@@ -106,10 +116,10 @@ class LocationStorageTest {
     void testUpdateNonExistentEntityThrowsException() {
         LocationStorage locationStorage = getLocationStorage();
 
-        Location updatedLocation = new Location("ekb", "Екатеринабург");
+        Location updatedLocation = createLocation(LOCATION_SLUG_EKB, UPDATED_LOCATION_NAME_KRD);
 
         assertThrows(EntityNotFoundException.class, () -> {
-            locationStorage.update("ekb", "ekb", updatedLocation);
+            locationStorage.update(LOCATION_SLUG_EKB, LOCATION_SLUG_EKB, updatedLocation);
         });
     }
 
@@ -118,7 +128,7 @@ class LocationStorageTest {
         LocationStorage locationStorage = getLocationStorage();
 
         assertThrows(EntityNotFoundException.class, () -> {
-            locationStorage.deleteById("ekb"); // Локации с таким ID нет
+            locationStorage.deleteById(LOCATION_SLUG_EKB);
         });
     }
 }
