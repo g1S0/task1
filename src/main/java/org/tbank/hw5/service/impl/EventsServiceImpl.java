@@ -7,6 +7,7 @@ import org.tbank.hw5.client.EventsClient;
 import org.tbank.hw5.dto.EventsRequestDto;
 import org.tbank.hw5.dto.EventDto;
 import org.tbank.hw5.service.EventsService;
+import org.tbank.hw5.utils.StringToNumberUtils;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -46,7 +47,7 @@ public class EventsServiceImpl implements EventsService {
 
             List<EventDto> filteredEvents = events.stream()
                     .filter(event -> {
-                        double price = event.extractSumFromPrice();
+                        double price = StringToNumberUtils.getNumberFromString(event.getPrice());
                         log.info("Checking event price: {}, converted budget: {}", price, convertedBudget);
                         return price <= convertedBudget;
                     })
