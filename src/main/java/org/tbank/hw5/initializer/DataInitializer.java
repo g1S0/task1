@@ -40,9 +40,8 @@ public class DataInitializer {
 
     public void initializeData() {
         try {
-            Future<?> categoriesFuture = fixedThreadPool.submit(categoryDataLoaderInitializer::initializeCategories);
-
-            Future<?> locationsFuture = fixedThreadPool.submit(locationDataLoaderInitializer::initializeLocations);
+            var categoriesFuture = fixedThreadPool.submit(categoryDataLoaderInitializer::initializeCategories);
+            var locationsFuture = fixedThreadPool.submit(locationDataLoaderInitializer::initializeLocations);
 
             categoriesFuture.get();
             locationsFuture.get();
