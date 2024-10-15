@@ -42,4 +42,31 @@ public abstract class ApiClient<T> {
             return Collections.emptyList();
         }
     }
+
+    public T fetchSingleFromApi(String apiUrl, Class<T> responseType) {
+        log.info("Fetching single {} from API at {}", responseType.getSimpleName(), apiUrl);
+
+        try {
+            T response = restClient
+                    .get()
+                    .uri(apiUrl)
+                    .retrieve()
+                    .body(responseType);
+
+            if (response == null) {
+                log.error("Failed to fetch single {} from API at {}.", responseType.getSimpleName(), apiUrl);
+                throw new IllegalStateException("No " + responseType.getSimpleName() + " fetched from API.");
+            }
+
+            log.info("Successfully fetched single {} from API.", responseType.getSimpleName());
+            return response;
+
+        } catch (Exception e) {
+            log.error("e: ", e);
+            log.error("Error occurred while fetching single {} from API at {}. Message: {}",
+                    responseType.getSimpleName(), apiUrl, e.getMessage());
+
+            return null;
+        }
+    }
 }
