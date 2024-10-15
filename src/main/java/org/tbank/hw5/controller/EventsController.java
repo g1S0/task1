@@ -25,11 +25,7 @@ public class EventsController {
 
     @GetMapping
     public ResponseEntity<List<EventDto>> getAllEvents(@RequestBody EventsRequestDto eventsRequestDto) {
-        try {
-            return ResponseEntity.ok(eventsService.getEvents(eventsRequestDto).get());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(eventsService.getEvents(eventsRequestDto));
     }
 
 }

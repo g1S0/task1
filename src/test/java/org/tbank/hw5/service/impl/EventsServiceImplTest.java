@@ -12,8 +12,6 @@ import org.tbank.hw5.dto.EventsRequestDto;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -32,7 +30,7 @@ class EventsServiceImplTest {
     }
 
     @Test
-    void testGetEvents_Success() throws ExecutionException, InterruptedException {
+    void testGetEvents_Success() {
         EventsRequestDto request = new EventsRequestDto(1000L, "RUB", null, null);
 
         List<EventDto> events = Arrays.asList(
@@ -44,11 +42,10 @@ class EventsServiceImplTest {
         when(eventsClient.getEvents(anyLong(), anyLong())).thenReturn(events);
         when(currencyClient.convertCurrency(anyDouble())).thenReturn(500.0);
 
-        CompletableFuture<List<EventDto>> resultFuture = eventsService.getEvents(request);
-        List<EventDto> result = resultFuture.get();
+        List<EventDto> resultFuture = eventsService.getEvents(request);
 
-        assertEquals(2, result.size());
-        assertTrue(result.stream().anyMatch(e -> e.getTitle().equals("Event 1")));
-        assertTrue(result.stream().anyMatch(e -> e.getTitle().equals("Event 2")));
+        assertEquals(2, resultFuture.size());
+        assertTrue(resultFuture.stream().anyMatch(e -> e.getTitle().equals("Event 1")));
+        assertTrue(resultFuture.stream().anyMatch(e -> e.getTitle().equals("Event 2")));
     }
 }

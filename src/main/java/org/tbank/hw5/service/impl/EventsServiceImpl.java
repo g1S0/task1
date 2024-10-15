@@ -26,7 +26,7 @@ public class EventsServiceImpl implements EventsService {
     }
 
     @Override
-    public CompletableFuture<List<EventDto>> getEvents(EventsRequestDto eventsRequestDto) {
+    public List<EventDto> getEvents(EventsRequestDto eventsRequestDto) {
         log.info("Received events request: {}", eventsRequestDto);
 
         CompletableFuture<List<EventDto>> eventsFuture = CompletableFuture.supplyAsync(() -> {
@@ -61,6 +61,11 @@ public class EventsServiceImpl implements EventsService {
             return null;
         });
 
-        return resultFuture;
+        try {
+            return resultFuture.get();
+        } catch (Exception e) {
+            log.error("Exception occurred while retrieving events: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to retrieve events", e); // Выбрасываем исключение с причиной
+        }
     }
 }
