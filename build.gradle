@@ -62,6 +62,8 @@ dependencies {
     testImplementation "org.wiremock:wiremock-standalone:3.6.0"
     testImplementation 'io.rest-assured:rest-assured'
     testImplementation "org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:1.0-alpha-13"
+
+    implementation 'io.projectreactor:reactor-core:3.6.10'
 }
 
 test {
