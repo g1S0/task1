@@ -66,7 +66,7 @@ public abstract class ApiClient<T> {
             log.error("Error occurred while fetching single {} from API at {}. Message: {}",
                     responseType.getSimpleName(), apiUrl, e.getMessage());
 
-            return null;
+            throw new RuntimeException("Failed to fetch single " + responseType.getSimpleName() + " from API at " + apiUrl, e);
         }
     }
 }
