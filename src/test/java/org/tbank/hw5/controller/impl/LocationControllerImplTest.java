@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.tbank.hw5.controller.LocationController;
 import org.tbank.hw5.dto.LocationDto;
 import org.tbank.hw5.dto.ResponseDto;
 import org.tbank.hw5.mapper.LocationMapper;
@@ -32,7 +33,7 @@ public class LocationControllerImplTest {
     private LocationMapper locationMapper;
 
     @InjectMocks
-    private LocationControllerImpl locationController;
+    private LocationController locationController;
 
     private final Location location = new Location(LOCATION_ID, LOCATION_NAME);
     private final LocationDto locationDto = new LocationDto(LOCATION_ID, LOCATION_NAME);

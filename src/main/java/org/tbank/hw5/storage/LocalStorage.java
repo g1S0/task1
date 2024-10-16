@@ -11,6 +11,10 @@ import org.tbank.hw5.exception.EntityNotFoundException;
 public class LocalStorage<K, T> {
     private final Map<K, T> storage = new ConcurrentHashMap<>();
 
+    public void clear() {
+        storage.clear();
+    }
+
     public T save(K id, T entity) throws EntityAlreadyExistsException {
         if (storage.containsKey(id)) {
             throw new EntityAlreadyExistsException("Entity with id " + id + " already exists.");
