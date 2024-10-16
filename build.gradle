@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'jacoco'
 }
 
 group 'org.tbank'
@@ -23,6 +24,7 @@ sourceSets {
         }
     }
 }
+
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
@@ -68,8 +70,38 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 
     testImplementation "org.wiremock:wiremock-standalone:3.6.0"
+
+    testImplementation 'io.github.hakky54:logcaptor:2.9.3'
+
+    testImplementation "org.testcontainers:testcontainers:1.20.2"
+    testImplementation "org.testcontainers:junit-jupiter:1.20.2"
+    testImplementation "org.wiremock:wiremock-standalone:3.6.0"
+    testImplementation 'io.rest-assured:rest-assured'
+    testImplementation "org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:1.0-alpha-13"
 }
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(
+                    dir: it,
+                    includes: ['org/tbank/hw5/**'],
+                    excludes: ['org/tbank/hw5/dto/**', 'org/tbank/hw5/exception/**', 'org/tbank/hw5/model/**']
+            )
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+}
+
+check {
+    dependsOn jacocoTestCoverageVerification
 }

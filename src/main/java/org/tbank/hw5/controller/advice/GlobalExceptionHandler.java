@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomErrorResponse> handleGenericException(Exception ex) {
-        CustomErrorResponse customErrorResponse = new CustomErrorResponse("Произошла ошибка: " + ex.getMessage());
+        CustomErrorResponse customErrorResponse = new CustomErrorResponse(ex.getMessage());
         return new ResponseEntity<>(customErrorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
