@@ -10,6 +10,9 @@ import org.tbank.hw5.exception.EntityNotFoundException;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class PlaceService {
 
@@ -23,33 +26,43 @@ public class PlaceService {
     }
 
     public PlaceDto createPlace(PlaceDto placeDto) {
+        log.info("Creating place: {}", placeDto);
         Place place = placeMapper.toEntity(placeDto);
-        return placeMapper.toDto(placeRepository.save(place));
+        PlaceDto createdPlaceDto = placeMapper.toDto(placeRepository.save(place));
+        log.info("Place created successfully: {}", createdPlaceDto);
+        return createdPlaceDto;
     }
 
     public List<PlaceDto> getAllPlaces() {
+        log.info("Fetching all places");
         List<Place> places = placeRepository.findAll();
         return placeMapper.toDtoList(places);
     }
 
     public PlaceDto getPlaceById(Long id) {
+        log.info("Fetching place with id: {}", id);
         Place place = placeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Place not found with id: " + id));
         return placeMapper.toDto(place);
     }
 
     public PlaceDto updatePlace(Long id, PlaceDto placeDto) {
+        log.info("Updating place with id: {}", id);
         Place place = placeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Place not found with id: " + id));
 
         placeMapper.updatePlace(place, placeDto, placeRepository);
-        return placeMapper.toDto(placeRepository.save(place));
+        PlaceDto updatedPlaceDto = placeMapper.toDto(placeRepository.save(place));
+        log.info("Place updated successfully: {}", updatedPlaceDto);
+        return updatedPlaceDto;
     }
 
     public void deletePlace(Long id) {
+        log.info("Deleting place with id: {}", id);
         if (!placeRepository.existsById(id)) {
             throw new EntityNotFoundException("Place not found with id: " + id);
         }
         placeRepository.deleteById(id);
+        log.info("Place deleted successfully with id: {}", id);
     }
 }

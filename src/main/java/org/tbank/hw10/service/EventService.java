@@ -12,6 +12,9 @@ import org.tbank.hw10.repository.PlaceRepository;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class EventService {
 
@@ -27,26 +30,32 @@ public class EventService {
     }
 
     public EventDto createEvent(EventDto eventDto) {
+        log.info("Creating event: {}", eventDto);
         Place place = placeRepository.findById(eventDto.getPlaceId())
                 .orElseThrow(() -> new EntityNotFoundException("Place not found with id: " + eventDto.getPlaceId()));
 
         Event event = eventMapper.dtoToEvent(eventDto);
         event.setPlace(place);
-        return eventMapper.eventToDto(eventRepository.save(event));
+        EventDto createdEventDto = eventMapper.eventToDto(eventRepository.save(event));
+        log.info("Event created successfully: {}", createdEventDto);
+        return createdEventDto;
     }
 
     public List<EventDto> getAllEvents() {
+        log.info("Fetching all events");
         List<Event> events = eventRepository.findAll();
         return eventMapper.eventsToDtos(events);
     }
 
     public EventDto getEventById(Long id) {
+        log.info("Fetching event with id: {}", id);
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Event not found with id: " + id));
         return eventMapper.eventToDto(event);
     }
 
     public EventDto updateEvent(Long id, EventDto eventDto) {
+        log.info("Updating event with id: {}", id);
         Event existingEvent = eventRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Event not found with id: " + id));
 
@@ -55,13 +64,17 @@ public class EventService {
 
         eventMapper.updateEvent(existingEvent, eventDto, eventRepository);
         existingEvent.setPlace(place);
-        return eventMapper.eventToDto(eventRepository.save(existingEvent));
+        EventDto updatedEventDto = eventMapper.eventToDto(eventRepository.save(existingEvent));
+        log.info("Event updated successfully: {}", updatedEventDto);
+        return updatedEventDto;
     }
 
     public void deleteEvent(Long id) {
+        log.info("Deleting event with id: {}", id);
         if (!eventRepository.existsById(id)) {
             throw new EntityNotFoundException("Event not found with id: " + id);
         }
         eventRepository.deleteById(id);
+        log.info("Event deleted successfully with id: {}", id);
     }
 }
