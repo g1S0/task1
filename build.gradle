@@ -68,6 +68,8 @@ dependencies {
     liquibaseRuntime 'info.picocli:picocli:4.6.3'
     liquibaseRuntime 'org.postgresql:postgresql:42.7.2'
 
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     implementation 'org.hibernate:hibernate-core:6.2.13.Final'
     implementation 'org.postgresql:postgresql:42.7.2'
     implementation 'org.hibernate:hibernate-validator:6.2.0.Final'

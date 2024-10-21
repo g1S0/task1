@@ -1,8 +1,10 @@
 package org.tbank.hw10.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.tbank.hw10.dto.PlaceDto;
 import org.tbank.hw10.dto.ResponseDto;
@@ -13,12 +15,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/places")
 @AllArgsConstructor
+@Validated
 public class PlaceController {
 
     private final PlaceService placeService;
 
     @PostMapping
-    public ResponseEntity<ResponseDto<PlaceDto>> createPlace(@RequestBody PlaceDto placeDto) {
+    public ResponseEntity<ResponseDto<PlaceDto>> createPlace(@Valid @RequestBody PlaceDto placeDto) {
         PlaceDto createdPlace = placeService.createPlace(placeDto);
         return new ResponseEntity<>(new ResponseDto<>(createdPlace), HttpStatus.CREATED);
     }
@@ -36,7 +39,7 @@ public class PlaceController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<PlaceDto>> updatePlace(@PathVariable Long id, @RequestBody PlaceDto placeDto) {
+    public ResponseEntity<ResponseDto<PlaceDto>> updatePlace(@PathVariable Long id, @Valid @RequestBody PlaceDto placeDto) {
         PlaceDto updatedPlace = placeService.updatePlace(id, placeDto);
         return new ResponseEntity<>(new ResponseDto<>(updatedPlace), HttpStatus.OK);
     }

@@ -1,9 +1,11 @@
 package org.tbank.hw10.mapper;
 
-import jakarta.persistence.EntityNotFoundException;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.tbank.hw10.dto.EventDto;
 import org.tbank.hw10.entity.Event;
+import org.tbank.hw10.exception.RelatedEntityNotFoundException;
 import org.tbank.hw10.repository.EventRepository;
 
 import java.util.List;
@@ -24,7 +26,7 @@ public interface EventMapper {
         event.setDate(eventDto.getDate());
 
         Event place = eventRepository.findById(event.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Place not found with id: " + event.getId()));
+                .orElseThrow(() -> new RelatedEntityNotFoundException("Place not found with id: " + event.getId()));
         event.setPlace(place.getPlace());
     }
 }

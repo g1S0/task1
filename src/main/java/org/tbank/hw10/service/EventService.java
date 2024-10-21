@@ -1,18 +1,18 @@
 package org.tbank.hw10.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbank.hw10.dto.EventDto;
 import org.tbank.hw10.entity.Event;
 import org.tbank.hw10.entity.Place;
+import org.tbank.hw10.exception.RelatedEntityNotFoundException;
 import org.tbank.hw10.mapper.EventMapper;
 import org.tbank.hw10.repository.EventRepository;
 import org.tbank.hw10.repository.PlaceRepository;
 
 import java.util.List;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -32,7 +32,7 @@ public class EventService {
     public EventDto createEvent(EventDto eventDto) {
         log.info("Creating event: {}", eventDto);
         Place place = placeRepository.findById(eventDto.getPlaceId())
-                .orElseThrow(() -> new EntityNotFoundException("Place not found with id: " + eventDto.getPlaceId()));
+                .orElseThrow(() -> new RelatedEntityNotFoundException("Place not found with id: " + eventDto.getPlaceId()));
 
         Event event = eventMapper.dtoToEvent(eventDto);
         event.setPlace(place);
@@ -60,7 +60,7 @@ public class EventService {
                 .orElseThrow(() -> new EntityNotFoundException("Event not found with id: " + id));
 
         Place place = placeRepository.findById(eventDto.getPlaceId())
-                .orElseThrow(() -> new EntityNotFoundException("Place not found with id: " + eventDto.getPlaceId()));
+                .orElseThrow(() -> new RelatedEntityNotFoundException("Place not found with id: " + eventDto.getPlaceId()));
 
         eventMapper.updateEvent(existingEvent, eventDto, eventRepository);
         existingEvent.setPlace(place);

@@ -1,8 +1,10 @@
 package org.tbank.hw10.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.tbank.hw10.dto.EventDto;
 import org.tbank.hw10.dto.ResponseDto;
@@ -13,12 +15,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/events")
 @AllArgsConstructor
+@Validated
 public class EventController {
 
     private final EventService eventService;
 
     @PostMapping
-    public ResponseEntity<ResponseDto<EventDto>> createEvent(@RequestBody EventDto eventDto) {
+    public ResponseEntity<ResponseDto<EventDto>> createEvent(@Valid @RequestBody EventDto eventDto) {
         EventDto createdEvent = eventService.createEvent(eventDto);
         return new ResponseEntity<>(new ResponseDto<>(createdEvent), HttpStatus.CREATED);
     }
@@ -36,7 +39,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<EventDto>> updateEvent(@PathVariable Long id, @RequestBody EventDto eventDto) {
+    public ResponseEntity<ResponseDto<EventDto>> updateEvent(@PathVariable Long id, @Valid @RequestBody EventDto eventDto) {
         EventDto updatedEvent = eventService.updateEvent(id, eventDto);
         return new ResponseEntity<>(new ResponseDto<>(updatedEvent), HttpStatus.OK);
     }
