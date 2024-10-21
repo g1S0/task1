@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tbank.hw10.dto.PlaceDto;
+import org.tbank.hw10.dto.ResponseDto;
 import org.tbank.hw10.service.PlaceService;
 
 import java.util.List;
@@ -17,32 +18,32 @@ public class PlaceController {
     private final PlaceService placeService;
 
     @PostMapping
-    public ResponseEntity<PlaceDto> createPlace(@RequestBody PlaceDto placeDto) {
+    public ResponseEntity<ResponseDto<PlaceDto>> createPlace(@RequestBody PlaceDto placeDto) {
         PlaceDto createdPlace = placeService.createPlace(placeDto);
-        return new ResponseEntity<>(createdPlace, HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponseDto<>(createdPlace), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<PlaceDto>> getAllPlaces() {
+    public ResponseEntity<ResponseDto<List<PlaceDto>>> getAllPlaces() {
         List<PlaceDto> places = placeService.getAllPlaces();
-        return new ResponseEntity<>(places, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDto<>(places), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PlaceDto> getPlaceById(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto<PlaceDto>> getPlaceById(@PathVariable Long id) {
         PlaceDto placeDto = placeService.getPlaceById(id);
-        return new ResponseEntity<>(placeDto, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDto<>(placeDto), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PlaceDto> updatePlace(@PathVariable Long id, @RequestBody PlaceDto placeDto) {
+    public ResponseEntity<ResponseDto<PlaceDto>> updatePlace(@PathVariable Long id, @RequestBody PlaceDto placeDto) {
         PlaceDto updatedPlace = placeService.updatePlace(id, placeDto);
-        return new ResponseEntity<>(updatedPlace, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDto<>(updatedPlace), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlace(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto<Void>> deletePlace(@PathVariable Long id) {
         placeService.deletePlace(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(new ResponseDto<>(null), HttpStatus.NO_CONTENT);
     }
 }
