@@ -25,7 +25,7 @@ public class Event {
     @Column(nullable = false)
     private LocalDate date;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false, foreignKey = @ForeignKey(name = "fk_event_place"))
     private Place place;
 }
