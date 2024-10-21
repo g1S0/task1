@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.liquibase.gradle' version '2.2.0'
     id 'jacoco'
 }
 
@@ -62,7 +63,36 @@ dependencies {
     testImplementation "org.wiremock:wiremock-standalone:3.6.0"
     testImplementation 'io.rest-assured:rest-assured'
     testImplementation "org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:1.0-alpha-13"
+
+    liquibaseRuntime 'org.liquibase:liquibase-core:4.20.0'
+    liquibaseRuntime 'info.picocli:picocli:4.6.3'
+    liquibaseRuntime 'org.postgresql:postgresql:42.7.2'
+
+    implementation 'org.hibernate:hibernate-core:6.2.13.Final'
+    implementation 'org.postgresql:postgresql:42.7.2'
+    implementation 'org.hibernate:hibernate-validator:6.2.0.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.yaml:snakeyaml:2.0'
 }
+
+
+liquibase {
+    activities {
+        main {
+            changeLogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
+            url "jdbc:postgresql://${System.getenv('DB_HOST') ?: 'localhost'}:${System.getenv('DB_PORT') ?: '5432'}/${System.getenv('DB_NAME') ?: 'city_attractions'}"
+            username "${System.getenv('DB_USERNAME') ?: 'admin'}"
+            password "${System.getenv('DB_PASSWORD') ?: 'admin'}"
+            driver "org.postgresql.Driver"
+        }
+    }
+}
+
+println "DB_HOST: ${System.getenv('DB_HOST') ?: 'not set'}"
+println "DB_PORT: ${System.getenv('DB_PORT') ?: 'not set'}"
+println "DB_NAME: ${System.getenv('DB_NAME') ?: 'not set'}"
+println "DB_USERNAME: ${System.getenv('DB_USERNAME') ?: 'not set'}"
+println "DB_PASSWORD: ${System.getenv('DB_PASSWORD') ?: 'not set'}"
 
 test {
     useJUnitPlatform()
