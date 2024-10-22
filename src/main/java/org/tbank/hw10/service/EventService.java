@@ -3,6 +3,7 @@ package org.tbank.hw10.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.tbank.hw10.dto.EventDto;
 import org.tbank.hw10.entity.Event;
@@ -11,7 +12,9 @@ import org.tbank.hw10.exception.RelatedEntityNotFoundException;
 import org.tbank.hw10.mapper.EventMapper;
 import org.tbank.hw10.repository.EventRepository;
 import org.tbank.hw10.repository.PlaceRepository;
+import org.tbank.hw10.repository.specification.EventSpecification;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -27,6 +30,12 @@ public class EventService {
         this.eventRepository = eventRepository;
         this.placeRepository = placeRepository;
         this.eventMapper = eventMapper;
+    }
+
+    public List<EventDto> findEvents(String name, Long placeId, LocalDate fromDate, LocalDate toDate) {
+        Specification<Event> spec = EventSpecification.findByCriteria(name, placeId, fromDate, toDate);
+        List<Event> events = eventRepository.findAll(spec);
+        return eventMapper.eventsToDtos(events);
     }
 
     public EventDto createEvent(EventDto eventDto) {

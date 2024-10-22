@@ -10,6 +10,7 @@ import org.tbank.hw10.dto.EventDto;
 import org.tbank.hw10.dto.ResponseDto;
 import org.tbank.hw10.service.EventService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -36,6 +37,16 @@ public class EventController {
     public ResponseEntity<ResponseDto<EventDto>> getEventById(@PathVariable Long id) {
         EventDto eventDto = eventService.getEventById(id);
         return new ResponseEntity<>(new ResponseDto<>(eventDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ResponseDto<List<EventDto>>> searchEvents(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long placeId,
+            @RequestParam(required = false) LocalDate fromDate,
+            @RequestParam(required = false) LocalDate toDate) {
+        List<EventDto> events = eventService.findEvents(name, placeId, fromDate, toDate);
+        return new ResponseEntity<>(new ResponseDto<>(events), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
