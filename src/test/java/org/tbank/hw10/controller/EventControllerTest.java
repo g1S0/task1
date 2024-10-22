@@ -183,4 +183,48 @@ public class EventControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Place not found with id: " + NON_EXISTENT_PLACE_ID));
     }
+
+    @Test
+    void testSearchEvents() throws Exception {
+        Place place = new Place(null, "Search", "Search 1", null);
+        Place savedPlace = placeRepository.save(place);
+
+        String eventDtoJson1 = createEventDtoJson("Event 1", "2020-01-01", savedPlace.getId());
+        String eventDtoJson2 = createEventDtoJson("Event 2", "2020-01-15", savedPlace.getId());
+        String eventDtoJson3 = createEventDtoJson("Event 3", "2020-02-01", savedPlace.getId());
+
+        mockMvc.perform(post("/api/v1/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(eventDtoJson1))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/v1/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(eventDtoJson2))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/v1/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(eventDtoJson3))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/api/v1/events/search")
+                        .param("name", "Event 1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].name").value("Event 1"));
+
+        mockMvc.perform(get("/api/v1/events/search")
+                        .param("fromDate", "2020-01-01")
+                        .param("toDate", "2020-01-31")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.length()").value(2));
+
+        mockMvc.perform(get("/api/v1/events/search")
+                        .param("placeId", String.valueOf(savedPlace.getId()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.length()").value(3));
+    }
 }
