@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = EventMapper.class)
 public interface PlaceMapper {
     PlaceDto toDto(Place place);
 
