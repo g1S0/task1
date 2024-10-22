@@ -66,38 +66,52 @@ public class EventControllerTest {
         placeRepository.save(place);
     }
 
-    String eventDtoJson = """
+    private static final String BASE_EVENT_DTO_JSON = """
             {
-                "name": "Event 1",
-                "date": "2024-01-01",
-                "placeId": 1
+                "name": "%s",
+                "date": "%s",
+                "placeId": %d
             }
             """;
 
+    private static final String EVENT_NAME_1 = "Event 1";
+    private static final String EVENT_DATE_1 = "2024-01-01";
+    private static final String EVENT_NAME_UPDATED = "Updated Event";
+    private static final String EVENT_DATE_UPDATED = "2024-10-22";
+    private static final long VALID_PLACE_ID = 1;
+    private static final long NON_EXISTENT_PLACE_ID = 999;
+
+    private String createEventDtoJson(String name, String date, long placeId) {
+        return String.format(BASE_EVENT_DTO_JSON, name, date, placeId);
+    }
+
     @Test
     void testCreateEvent() throws Exception {
+        String eventDtoJson = createEventDtoJson(EVENT_NAME_1, EVENT_DATE_1, VALID_PLACE_ID);
+
         MvcResult createResult = mockMvc.perform(post("/api/v1/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(eventDtoJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.name").value("Event 1"))
-                .andExpect(jsonPath("$.data.date").value("2024-01-01"))
+                .andExpect(jsonPath("$.data.name").value(EVENT_NAME_1))
+                .andExpect(jsonPath("$.data.date").value(EVENT_DATE_1))
                 .andReturn();
 
         EventDto createdEvent = objectMapper.readValue(createResult.getResponse().getContentAsString(), new TypeReference<ResponseDto<EventDto>>() {
         }).getData();
 
         Optional<Event> optionalEvent = eventRepository.findById(createdEvent.getId());
-
         assert optionalEvent.isPresent();
 
         Event firstEvent = optionalEvent.get();
-        Assertions.assertEquals("Event 1", firstEvent.getName());
-        Assertions.assertEquals(LocalDate.parse("2024-01-01"), firstEvent.getDate());
+        Assertions.assertEquals(EVENT_NAME_1, firstEvent.getName());
+        Assertions.assertEquals(LocalDate.parse(EVENT_DATE_1), firstEvent.getDate());
     }
 
     @Test
     void testGetEventById() throws Exception {
+        String eventDtoJson = createEventDtoJson(EVENT_NAME_1, EVENT_DATE_1, VALID_PLACE_ID);
+
         MvcResult createResult = mockMvc.perform(post("/api/v1/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(eventDtoJson))
@@ -110,12 +124,14 @@ public class EventControllerTest {
         mockMvc.perform(get("/api/v1/events/" + createdEvent.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.name").value("Event 1"))
-                .andExpect(jsonPath("$.data.date").value("2024-01-01"));
+                .andExpect(jsonPath("$.data.name").value(EVENT_NAME_1))
+                .andExpect(jsonPath("$.data.date").value(EVENT_DATE_1));
     }
 
     @Test
     void testUpdateEvent() throws Exception {
+        String eventDtoJson = createEventDtoJson(EVENT_NAME_1, EVENT_DATE_1, VALID_PLACE_ID);
+
         MvcResult createResult = mockMvc.perform(post("/api/v1/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(eventDtoJson))
@@ -125,24 +141,20 @@ public class EventControllerTest {
         EventDto createdEvent = objectMapper.readValue(createResult.getResponse().getContentAsString(), new TypeReference<ResponseDto<EventDto>>() {
         }).getData();
 
-        String updatedEventDtoJson = """
-                {
-                    "name": "Updated Event",
-                    "date": "2024-10-22",
-                    "placeId": 1
-                }
-                """;
+        String updatedEventDtoJson = createEventDtoJson(EVENT_NAME_UPDATED, EVENT_DATE_UPDATED, VALID_PLACE_ID);
 
         mockMvc.perform(put("/api/v1/events/" + createdEvent.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedEventDtoJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.name").value("Updated Event"))
-                .andExpect(jsonPath("$.data.date").value("2024-10-22"));
+                .andExpect(jsonPath("$.data.name").value(EVENT_NAME_UPDATED))
+                .andExpect(jsonPath("$.data.date").value(EVENT_DATE_UPDATED));
     }
 
     @Test
     void testDeleteEvent() throws Exception {
+        String eventDtoJson = createEventDtoJson(EVENT_NAME_1, EVENT_DATE_1, VALID_PLACE_ID);
+
         MvcResult createResult = mockMvc.perform(post("/api/v1/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(eventDtoJson))
@@ -163,18 +175,12 @@ public class EventControllerTest {
 
     @Test
     void testCreateEventWithNonExistentPlaceId() throws Exception {
-        String eventDtoJson = """
-        {
-            "name": "Event with Non-Existent Place",
-            "date": "2024-01-01",
-            "placeId": 999 
-        }
-        """;
+        String eventDtoJson = createEventDtoJson("Event with Non-Existent Place", EVENT_DATE_1, NON_EXISTENT_PLACE_ID);
 
         mockMvc.perform(post("/api/v1/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(eventDtoJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Place not found with id: 999"));
+                .andExpect(jsonPath("$.message").value("Place not found with id: " + NON_EXISTENT_PLACE_ID));
     }
 }
