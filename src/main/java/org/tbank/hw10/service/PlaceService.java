@@ -41,7 +41,7 @@ public class PlaceService {
 
     public PlaceDto getPlaceById(Long id) {
         log.info("Fetching place with id: {}", id);
-        Place place = placeRepository.findById(id)
+        Place place = placeRepository.findByIdWithEvents(id)
                 .orElseThrow(() -> new EntityNotFoundException("Place not found with id: " + id));
         return placeMapper.toDto(place);
     }
