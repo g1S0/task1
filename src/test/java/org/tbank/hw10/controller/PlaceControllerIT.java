@@ -66,98 +66,77 @@ public class PlaceControllerIT {
         eventRepository.deleteAll();
     }
 
-    String placeDtoJson = """
-            {
-                "slug": "slug-1",
-                "name": "Place 1"
-            }
-            """;
+    private final String PLACE_SLUG = "slug-1";
+    private final String PLACE_NAME = "Place 1";
 
-    String updatePlaceJson = """
-            {
-                "slug": "slug-updated",
-                "name": "Place Updated"
-            }
-            """;
+    private String createPlaceJson(String slug, String name) {
+        return String.format("""
+                {
+                    "slug": "%s",
+                    "name": "%s"
+                }
+                """, slug, name);
+    }
+
+    private Long createPlaceAndGetId(String slug, String name) throws Exception {
+        String placeJson = createPlaceJson(slug, name);
+        MvcResult result = mockMvc.perform(post("/api/v1/places")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(placeJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        return objectMapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<ResponseDto<PlaceDto>>() {
+                }).getData().getId();
+    }
 
     @Test
     void testCreatePlace() throws Exception {
-        mockMvc.perform(post("/api/v1/places")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(placeDtoJson))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.slug").value("slug-1"))
-                .andExpect(jsonPath("$.data.name").value("Place 1"));
+        Long createdPlaceId = createPlaceAndGetId(PLACE_SLUG, PLACE_NAME);
 
-        List<Place> allPlaces = placeRepository.findAll();
-        Place firstPlace = allPlaces.stream().findFirst().orElse(null);
-
+        Place firstPlace = placeRepository.findById(createdPlaceId).orElse(null);
         assert firstPlace != null;
 
-        Assertions.assertEquals(firstPlace.getSlug(), "slug-1");
-        Assertions.assertEquals(firstPlace.getName(), "Place 1");
+        Assertions.assertEquals(PLACE_SLUG, firstPlace.getSlug());
+        Assertions.assertEquals(PLACE_NAME, firstPlace.getName());
     }
 
     @Test
     void testUpdatePlace() throws Exception {
-        MvcResult createResult = mockMvc.perform(post("/api/v1/places")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(placeDtoJson))
-                .andExpect(status().isCreated())
-                .andReturn();
+        Long createdPlaceId = createPlaceAndGetId(PLACE_SLUG, PLACE_NAME);
 
-        PlaceDto createdPlace = objectMapper.readValue(createResult.getResponse().getContentAsString(),
-                new TypeReference<ResponseDto<PlaceDto>>() {
-                }).getData();
+        String UPDATED_PLACE_SLUG = "slug-updated";
+        String UPDATED_PLACE_NAME = "Place Updated";
+        String updatePlaceJson = createPlaceJson(UPDATED_PLACE_SLUG, UPDATED_PLACE_NAME);
 
-        mockMvc.perform(put("/api/v1/places/" + createdPlace.getId())
+        mockMvc.perform(put("/api/v1/places/" + createdPlaceId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatePlaceJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.slug").value("slug-updated"))
-                .andExpect(jsonPath("$.data.name").value("Place Updated"));
+                .andExpect(jsonPath("$.data.slug").value(UPDATED_PLACE_SLUG))
+                .andExpect(jsonPath("$.data.name").value(UPDATED_PLACE_NAME));
 
-        List<Place> allPlaces = placeRepository.findAll();
-        Place firstPlace = allPlaces.stream()
-                .filter(place -> place.getId().equals(createdPlace.getId()))
-                .findFirst()
-                .orElse(null);
-
-        assert firstPlace != null;
-        Assertions.assertEquals("slug-updated", firstPlace.getSlug());
-        Assertions.assertEquals("Place Updated", firstPlace.getName());
+        Place updatedPlace = placeRepository.findById(createdPlaceId).orElse(null);
+        assert updatedPlace != null;
+        Assertions.assertEquals(UPDATED_PLACE_SLUG, updatedPlace.getSlug());
+        Assertions.assertEquals(UPDATED_PLACE_NAME, updatedPlace.getName());
     }
 
     @Test
     void testGetPlaceById() throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/v1/places")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(placeDtoJson))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        Long createdPlaceId = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<ResponseDto<PlaceDto>>() {
-                }).getData().getId();
+        Long createdPlaceId = createPlaceAndGetId(PLACE_SLUG, PLACE_NAME);
 
         mockMvc.perform(get("/api/v1/places/" + createdPlaceId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.slug").value("slug-1"))
-                .andExpect(jsonPath("$.data.name").value("Place 1"));
+                .andExpect(jsonPath("$.data.slug").value(PLACE_SLUG))
+                .andExpect(jsonPath("$.data.name").value(PLACE_NAME));
     }
 
     @Test
     void testDeletePlace() throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/v1/places")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(placeDtoJson))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        Long createdPlaceId = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<ResponseDto<PlaceDto>>() {
-                }).getData().getId();
+        Long createdPlaceId = createPlaceAndGetId(PLACE_SLUG, PLACE_NAME);
 
         mockMvc.perform(delete("/api/v1/places/" + createdPlaceId)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -170,16 +149,17 @@ public class PlaceControllerIT {
 
     @Test
     void testCascadeDeletePlace() throws Exception {
-        Place place = new Place(1L, "slug-1", "Place 1", null);
-        Place savedPlace = placeRepository.save(place);
+        Place savedPlace = placeRepository.save(new Place(1L, PLACE_SLUG, PLACE_NAME, null));
 
+        String EVENT_NAME = "Event 1";
+        String EVENT_DATE = "2024-01-01";
         String eventDtoJson = String.format("""
                     {
-                        "name": "Event 1",
-                        "date": "2024-01-01",
+                        "name": "%s",
+                        "date": "%s",
                         "placeId": %d
                     }
-                """, savedPlace.getId());
+                """, EVENT_NAME, EVENT_DATE, savedPlace.getId());
 
         mockMvc.perform(post("/api/v1/events")
                         .contentType(MediaType.APPLICATION_JSON)
