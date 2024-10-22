@@ -1,9 +1,10 @@
 package org.tbank.hw10.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class RelatedEntityNotFoundException extends RuntimeException {
     public RelatedEntityNotFoundException(String message) {
         super(message);

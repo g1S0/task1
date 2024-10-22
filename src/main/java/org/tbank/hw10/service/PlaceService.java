@@ -6,7 +6,7 @@ import org.tbank.hw10.dto.PlaceDto;
 import org.tbank.hw10.entity.Place;
 import org.tbank.hw10.mapper.PlaceMapper;
 import org.tbank.hw10.repository.PlaceRepository;
-import org.tbank.hw5.exception.EntityNotFoundException;
+import org.tbank.hw10.exception.EntityNotFoundException;
 
 import java.util.List;
 

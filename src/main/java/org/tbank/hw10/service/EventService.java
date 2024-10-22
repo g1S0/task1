@@ -1,6 +1,5 @@
 package org.tbank.hw10.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.tbank.hw10.dto.EventDto;
 import org.tbank.hw10.entity.Event;
 import org.tbank.hw10.entity.Place;
+import org.tbank.hw10.exception.EntityNotFoundException;
 import org.tbank.hw10.exception.RelatedEntityNotFoundException;
 import org.tbank.hw10.mapper.EventMapper;
 import org.tbank.hw10.repository.EventRepository;

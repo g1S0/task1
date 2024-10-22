@@ -1,8 +1,6 @@
 package org.tbank.hw10.mapper;
 
-import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import org.tbank.hw10.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tbank.hw10.entity.Place;

@@ -1,11 +1,11 @@
 package org.tbank.hw10.controller.advice;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.tbank.hw10.exception.EntityNotFoundException;
 import org.tbank.hw10.exception.RelatedEntityNotFoundException;
 import org.tbank.hw5.exception.model.CustomErrorResponse;
 
