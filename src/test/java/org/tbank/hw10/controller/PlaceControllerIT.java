@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.tbank.hw10.dto.PlaceDto;
 import org.tbank.hw10.dto.ResponseDto;
+import org.tbank.hw10.entity.Event;
 import org.tbank.hw10.entity.Place;
 import org.tbank.hw10.repository.EventRepository;
 import org.tbank.hw10.repository.PlaceRepository;
@@ -165,5 +166,29 @@ public class PlaceControllerIT {
         mockMvc.perform(get("/api/v1/places/" + createdPlaceId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testCascadeDeletePlace() throws Exception {
+        Place place = new Place(1L, "slug-1", "Place 1", null);
+        Place savedPlace = placeRepository.save(place);
+
+        String eventDtoJson = String.format("""
+                    {
+                        "name": "Event 1",
+                        "date": "2024-01-01",
+                        "placeId": %d
+                    }
+                """, savedPlace.getId());
+
+        mockMvc.perform(post("/api/v1/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(eventDtoJson))
+                .andExpect(status().isCreated());
+
+        placeRepository.deleteById(savedPlace.getId());
+
+        List<Event> allEvents = eventRepository.findAll();
+        Assertions.assertTrue(allEvents.isEmpty());
     }
 }
