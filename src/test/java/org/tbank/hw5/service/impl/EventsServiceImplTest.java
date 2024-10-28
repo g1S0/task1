@@ -48,4 +48,24 @@ class EventsServiceImplTest {
         assertTrue(resultFuture.stream().anyMatch(e -> e.getTitle().equals("Event 1")));
         assertTrue(resultFuture.stream().anyMatch(e -> e.getTitle().equals("Event 2")));
     }
+
+    @Test
+    void testGetEventsWithProjectReactor_Success() {
+        EventsRequestDto request = new EventsRequestDto(1000L, "RUB", null, null);
+
+        List<EventDto> events = Arrays.asList(
+                new EventDto("Event 1", "100"),
+                new EventDto("Event 2", "300"),
+                new EventDto("Event 3", "700")
+        );
+
+        when(eventsClient.getEvents(anyLong(), anyLong())).thenReturn(events);
+        when(currencyClient.convertCurrency(anyDouble())).thenReturn(500.0);
+
+        List<EventDto> resultFuture = eventsService.getEventsWithProjectReactor(request);
+
+        assertEquals(2, resultFuture.size());
+        assertTrue(resultFuture.stream().anyMatch(e -> e.getTitle().equals("Event 1")));
+        assertTrue(resultFuture.stream().anyMatch(e -> e.getTitle().equals("Event 2")));
+    }
 }

@@ -28,4 +28,9 @@ public class EventsController {
         return ResponseEntity.ok(eventsService.getEvents(eventsRequestDto));
     }
 
+    @GetMapping("/projectReactor")
+    public ResponseEntity<List<EventDto>> getAllEventsWithProjectReactor(@RequestBody EventsRequestDto eventsRequestDto) {
+        return ResponseEntity.ok(eventsService.getEventsWithProjectReactor(eventsRequestDto));
+    }
+
 }

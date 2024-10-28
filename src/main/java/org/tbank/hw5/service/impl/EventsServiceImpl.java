@@ -27,48 +27,48 @@ public class EventsServiceImpl implements EventsService {
         this.currencyClient = currencyClient;
     }
 
-//    public List<EventDto> getEvents(EventsRequestDto eventsRequestDto) {
-//        log.info("Received events request: {}", eventsRequestDto);
-//
-//        Mono<List<EventDto>> eventsMono = Mono.fromCallable(() -> {
-//            log.info("Fetching events from {} to {}",
-//                    eventsRequestDto.getDateFromAsUnixTimestamp(),
-//                    eventsRequestDto.getDateToAsUnixTimestamp());
-//            return eventsClient.getEvents(eventsRequestDto.getDateFromAsUnixTimestamp(),
-//                    eventsRequestDto.getDateToAsUnixTimestamp());
-//        });
-//
-//        Mono<Double> convertedBudgetMono = Mono.fromCallable(() -> {
-//            log.info("Converting budget: {}", eventsRequestDto.getBudget());
-//            return currencyClient.convertCurrency(eventsRequestDto.getBudget());
-//        });
-//
-//        return Mono.zip(eventsMono, convertedBudgetMono)
-//                .flatMap(tuple -> {
-//                    List<EventDto> events = tuple.getT1();
-//                    Double convertedBudget = tuple.getT2();
-//
-//                    log.info("Events fetched: {}", events.size());
-//                    log.info("Converted budget: {}", convertedBudget);
-//
-//                    List<EventDto> filteredEvents = events.stream()
-//                            .filter(event -> {
-//                                double price = StringToNumberUtils.getNumberFromString(event.getPrice());
-//                                log.info("Checking event price: {}, converted budget: {}", price, convertedBudget);
-//                                return price <= convertedBudget;
-//                            })
-//                            .collect(Collectors.toList());
-//
-//                    log.info("Filtered events count: {}", filteredEvents.size());
-//
-//                    return Mono.just(filteredEvents);
-//                })
-//                .onErrorResume(ex -> {
-//                    log.error("Error processing events or budget conversion", ex);
-//                    return Mono.error(new RuntimeException("Failed to process events or convert budget", ex));
-//                })
-//                .block();
-//    }
+    public List<EventDto> getEventsWithProjectReactor(EventsRequestDto eventsRequestDto) {
+        log.info("Received events request: {}", eventsRequestDto);
+
+        Mono<List<EventDto>> eventsMono = Mono.fromCallable(() -> {
+            log.info("Fetching events from {} to {}",
+                    eventsRequestDto.getDateFromAsUnixTimestamp(),
+                    eventsRequestDto.getDateToAsUnixTimestamp());
+            return eventsClient.getEvents(eventsRequestDto.getDateFromAsUnixTimestamp(),
+                    eventsRequestDto.getDateToAsUnixTimestamp());
+        });
+
+        Mono<Double> convertedBudgetMono = Mono.fromCallable(() -> {
+            log.info("Converting budget: {}", eventsRequestDto.getBudget());
+            return currencyClient.convertCurrency(eventsRequestDto.getBudget());
+        });
+
+        return Mono.zip(eventsMono, convertedBudgetMono)
+                .flatMap(tuple -> {
+                    List<EventDto> events = tuple.getT1();
+                    Double convertedBudget = tuple.getT2();
+
+                    log.info("Events fetched: {}", events.size());
+                    log.info("Converted budget: {}", convertedBudget);
+
+                    List<EventDto> filteredEvents = events.stream()
+                            .filter(event -> {
+                                double price = StringToNumberUtils.getNumberFromString(event.getPrice());
+                                log.info("Checking event price: {}, converted budget: {}", price, convertedBudget);
+                                return price <= convertedBudget;
+                            })
+                            .collect(Collectors.toList());
+
+                    log.info("Filtered events count: {}", filteredEvents.size());
+
+                    return Mono.just(filteredEvents);
+                })
+                .onErrorResume(ex -> {
+                    log.error("Error processing events or budget conversion", ex);
+                    return Mono.error(new RuntimeException("Failed to process events or convert budget", ex));
+                })
+                .block();
+    }
 
     @Override
     public List<EventDto> getEvents(EventsRequestDto eventsRequestDto) {

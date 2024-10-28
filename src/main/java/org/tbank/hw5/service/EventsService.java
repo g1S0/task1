@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface EventsService {
     List<EventDto> getEvents(EventsRequestDto eventsRequestDto);
+    List<EventDto> getEventsWithProjectReactor(EventsRequestDto eventsRequestDto);
 }
