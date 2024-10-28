@@ -3,12 +3,15 @@ package org.tbank.hw10.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tbank.hw10.dto.PlaceDto;
+import org.tbank.hw10.entity.Event;
 import org.tbank.hw10.entity.Place;
 import org.tbank.hw10.mapper.PlaceMapper;
 import org.tbank.hw10.repository.PlaceRepository;
 import org.tbank.hw10.exception.EntityNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +54,7 @@ public class PlaceService {
         Place place = placeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Place not found with id: " + id));
 
-        placeMapper.updatePlace(place, placeDto, placeRepository);
+        placeMapper.updatePlace(place, placeDto, place.getEvents());
         PlaceDto updatedPlaceDto = placeMapper.toDto(placeRepository.save(place));
         log.info("Place updated successfully: {}", updatedPlaceDto);
         return updatedPlaceDto;
