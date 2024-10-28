@@ -13,6 +13,8 @@ public class EventsClient extends ApiClient<EventResponseDto> {
     @Value("${kudago.api.base-url}")
     private String baseUrl;
 
+    private static final String API_URL_TEMPLATE = "%s/events/?actual_since=%d&actual_until=%d&location=%s&fields=%s";
+
     public EventsClient(RestClient restClient) {
         super(restClient);
     }
@@ -20,8 +22,7 @@ public class EventsClient extends ApiClient<EventResponseDto> {
     private String getApiUrl(long dateFrom, long dateTo) {
         String location = "krd";
         String fields = "price,title";
-        return String.format("%s/events/?actual_since=%d&actual_until=%d&location=%s&fields=%s",
-                baseUrl, dateFrom, dateTo, location, fields);
+        return String.format(API_URL_TEMPLATE, baseUrl, dateFrom, dateTo, location, fields);
     }
 
     public List<EventDto> getEvents(long dateFrom, long dateTo) {
