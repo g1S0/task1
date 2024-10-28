@@ -1,5 +1,6 @@
 package org.tbank.hw5.configuration;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +11,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Configuration
@@ -24,21 +24,12 @@ public class ExecutorConfig {
     private int scheduledThreadPoolSize;
 
     @Bean(name = "dataLoaderThreadPool")
-    public ExecutorService fixedThreadPool() {
+    public ExecutorService dataLoaderThreadPool() {
         log.info("Creating fixed thread pool with size: {}", fixedThreadPoolSize);
 
-        ThreadFactory namedThreadFactory = new ThreadFactory() {
-            private final AtomicInteger threadNumber = new AtomicInteger(1);
-            private final String threadName = "FixedPool-Worker-";
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setName(threadName + threadNumber.getAndIncrement());
-                log.info("Created new thread: {}", thread.getName());
-                return thread;
-            }
-        };
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+                .setNameFormat("dataLoaderThreadPool-Worker-%d")
+                .build();
 
         ExecutorService executorService = Executors.newFixedThreadPool(fixedThreadPoolSize, namedThreadFactory);
         log.info("Fixed thread pool created successfully");
@@ -49,18 +40,9 @@ public class ExecutorConfig {
     public ScheduledExecutorService scheduledThreadPool() {
         log.info("Creating scheduled thread pool with size: {}", scheduledThreadPoolSize);
 
-        ThreadFactory namedThreadFactory = new ThreadFactory() {
-            private final AtomicInteger threadNumber = new AtomicInteger(1);
-            private final String threadName = "ScheduledPool-Worker-";
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setName(threadName + threadNumber.getAndIncrement());
-                log.info("Created new thread: {}", thread.getName());
-                return thread;
-            }
-        };
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+                .setNameFormat("ScheduledPool-Worker-%d")
+                .build();
 
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(scheduledThreadPoolSize, namedThreadFactory);
         log.info("Scheduled thread pool created successfully");
