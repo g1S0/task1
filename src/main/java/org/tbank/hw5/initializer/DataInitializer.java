@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 @Component
 @Slf4j
 public class DataInitializer {
-    private final ExecutorService fixedThreadPool;
+    private final ExecutorService dataLoaderThreadPool;
     private final ScheduledExecutorService scheduledThreadPool;
     private final LocationDataLoaderInitializer locationDataLoaderInitializer;
     private final CategoryDataLoaderInitializer categoryDataLoaderInitializer;
@@ -22,12 +22,12 @@ public class DataInitializer {
     private Duration scheduleDuration;
 
     public DataInitializer(
-            @Qualifier("fixedThreadPool") ExecutorService fixedThreadPool,
+            @Qualifier("dataLoaderThreadPool") ExecutorService dataLoaderThreadPool,
             @Qualifier("scheduledThreadPool") ScheduledExecutorService scheduledThreadPool,
             LocationDataLoaderInitializer locationDataLoaderInitializer,
             CategoryDataLoaderInitializer categoryDataLoaderInitializer
     ) {
-        this.fixedThreadPool = fixedThreadPool;
+        this.dataLoaderThreadPool = dataLoaderThreadPool;
         this.scheduledThreadPool = scheduledThreadPool;
         this.locationDataLoaderInitializer = locationDataLoaderInitializer;
         this.categoryDataLoaderInitializer = categoryDataLoaderInitializer;
@@ -40,8 +40,8 @@ public class DataInitializer {
 
     public void initializeData() {
         try {
-            var categoriesFuture = fixedThreadPool.submit(categoryDataLoaderInitializer::initializeCategories);
-            var locationsFuture = fixedThreadPool.submit(locationDataLoaderInitializer::initializeLocations);
+            var categoriesFuture = dataLoaderThreadPool.submit(categoryDataLoaderInitializer::initializeCategories);
+            var locationsFuture = dataLoaderThreadPool.submit(locationDataLoaderInitializer::initializeLocations);
 
             categoriesFuture.get();
             locationsFuture.get();

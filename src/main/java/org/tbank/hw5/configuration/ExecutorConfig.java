@@ -23,7 +23,7 @@ public class ExecutorConfig {
     @Value("${scheduled.thread.pool.size}")
     private int scheduledThreadPoolSize;
 
-    @Bean(name = "fixedThreadPool")
+    @Bean(name = "dataLoaderThreadPool")
     public ExecutorService fixedThreadPool() {
         log.info("Creating fixed thread pool with size: {}", fixedThreadPoolSize);
 
