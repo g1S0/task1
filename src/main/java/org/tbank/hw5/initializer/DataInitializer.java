@@ -40,11 +40,14 @@ public class DataInitializer {
 
     public void initializeData() {
         try {
-            var categoriesFuture = dataLoaderThreadPool.submit(categoryDataLoaderInitializer::initializeCategories);
-            var locationsFuture = dataLoaderThreadPool.submit(locationDataLoaderInitializer::initializeLocations);
+            CompletableFuture<Void> categoriesFuture = CompletableFuture.runAsync(
+                    categoryDataLoaderInitializer::initializeCategories, dataLoaderThreadPool);
 
-            categoriesFuture.get();
-            locationsFuture.get();
+            CompletableFuture<Void> locationsFuture = CompletableFuture.runAsync(
+                    locationDataLoaderInitializer::initializeLocations, dataLoaderThreadPool);
+
+            CompletableFuture<Void> allFutures = CompletableFuture.allOf(categoriesFuture, locationsFuture);
+            allFutures.get();
 
             log.info("All data has been successfully initialized.");
         } catch (Exception e) {
