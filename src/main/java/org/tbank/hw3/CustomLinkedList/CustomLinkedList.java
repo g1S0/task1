@@ -1,6 +1,8 @@
 package org.tbank.hw3.CustomLinkedList;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class CustomLinkedList<E> {
     Node<E> head;
@@ -10,6 +12,37 @@ public class CustomLinkedList<E> {
     public CustomLinkedList() {
         this.head = null;
         this.tail = null;
+    }
+
+    public CustomIterator<E> iterator() {
+        return new CustomIteratorImpl();
+    }
+
+    private class CustomIteratorImpl implements CustomIterator<E> {
+        private Node<E> current = head;
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public E next() {
+            if (!hasNext()) {
+                throw new IllegalStateException("No more elements");
+            }
+            E data = current.data;
+            current = current.next;
+            return data;
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super E> action) {
+            Objects.requireNonNull(action);
+            while (hasNext()) {
+                action.accept(next());
+            }
+        }
     }
 
     public void add(E data) {
