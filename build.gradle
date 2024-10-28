@@ -56,6 +56,22 @@ dependencies {
     implementation 'org.aspectj:aspectjweaver'
 
     implementation 'org.example:annotation-starter:1.0-SNAPSHOT'
+
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.0'
+
+    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.5'
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
+    testImplementation "org.wiremock:wiremock-standalone:3.6.0"
+
     testImplementation 'io.github.hakky54:logcaptor:2.9.3'
 
     testImplementation "org.testcontainers:testcontainers:1.20.2"
