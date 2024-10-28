@@ -5,8 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.tbank.hw10.dto.EventDto;
 import org.tbank.hw10.entity.Event;
-import org.tbank.hw10.exception.RelatedEntityNotFoundException;
-import org.tbank.hw10.repository.EventRepository;
+import org.tbank.hw10.entity.Place;
 
 import java.util.List;
 
@@ -21,12 +20,9 @@ public interface EventMapper {
     @Mapping(target = "place", source = "placeId")
     Event dtoToEvent(EventDto eventDto);
 
-    default void updateEvent(@MappingTarget Event event, EventDto eventDto, EventRepository eventRepository) {
+    default void updateEvent(@MappingTarget Event event, EventDto eventDto, Place place) {
         event.setName(eventDto.getName());
         event.setDate(eventDto.getDate());
-
-        Event place = eventRepository.findById(event.getId())
-                .orElseThrow(() -> new RelatedEntityNotFoundException("Place not found with id: " + event.getId()));
-        event.setPlace(place.getPlace());
+        event.setPlace(place);
     }
 }

@@ -71,8 +71,7 @@ public class EventService {
         Place place = placeRepository.findById(eventDto.getPlaceId())
                 .orElseThrow(() -> new RelatedEntityNotFoundException("Place not found with id: " + eventDto.getPlaceId()));
 
-        eventMapper.updateEvent(existingEvent, eventDto, eventRepository);
-        existingEvent.setPlace(place);
+        eventMapper.updateEvent(existingEvent, eventDto, place);
         EventDto updatedEventDto = eventMapper.eventToDto(eventRepository.save(existingEvent));
         log.info("Event updated successfully: {}", updatedEventDto);
         return updatedEventDto;
