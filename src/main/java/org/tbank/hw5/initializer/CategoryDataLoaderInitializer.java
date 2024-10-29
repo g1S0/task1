@@ -17,16 +17,17 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class CategoryDataLoaderInitializer {
+public class CategoryDataLoaderInitializer implements Command {
     private static final Logger logger = LoggerFactory.getLogger(CategoryDataLoaderInitializer.class);
 
     private final CategoryApiClient categoryApiClient;
     private final List<DataObserver<Category>> dataObservers;
     private final CategoryMapper categoryMapper;
 
+    @Override
     @EventListener(ApplicationReadyEvent.class)
     @LogExecutionTime
-    public void initializeCategories() {
+    public void execute() {
         logger.info("Starting data source for categories");
 
         List<CategoryDto> categoriesDto = categoryApiClient.fetchCategories();

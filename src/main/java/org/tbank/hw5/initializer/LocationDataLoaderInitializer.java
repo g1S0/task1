@@ -17,16 +17,17 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class LocationDataLoaderInitializer {
+public class LocationDataLoaderInitializer implements Command {
     private static final Logger logger = LoggerFactory.getLogger(LocationDataLoaderInitializer.class);
 
     private final LocationApiClient locationApiClient;
     private final List<DataObserver<Location>> dataObservers;
     private final LocationMapper locationMapper;
 
+    @Override
     @EventListener(ApplicationReadyEvent.class)
     @LogExecutionTime
-    public void initializeCategories() {
+    public void execute() {
         logger.info("Starting location data source for locations");
 
         List<LocationDto> locationsDto = locationApiClient.fetchLocations();
