@@ -15,17 +15,19 @@ import java.util.Map;
 @Service
 public class JwtService {
     private final String secretKey = "7A5B713377684E693055426D673968734E2B573154424C646742734B6F755274";
-    private final long jwtExpiration = 3600000;
+    private final long jwtTenMinutesExpiration = 3600000;
+    private final long jwtThirtyDaysExpiration = 3600000;
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        return buildToken(new HashMap<>(), userDetails, jwtTenMinutesExpiration);
     }
 
-    public String generateToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails
-    ) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+    public String generateTokenWithRememberMeParameters(UserDetails userDetails, boolean rememberMe) {
+        if (rememberMe) {
+            return buildToken(new HashMap<>(), userDetails, jwtThirtyDaysExpiration);
+        }
+
+        return buildToken(new HashMap<>(), userDetails, jwtTenMinutesExpiration);
     }
 
     private String buildToken(
