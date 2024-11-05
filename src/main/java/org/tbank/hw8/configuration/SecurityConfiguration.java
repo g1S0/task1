@@ -36,6 +36,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers("/api/v1/auth/**")
                                 .permitAll()
+                                .requestMatchers("/currencies/convert").hasRole("ADMIN")
                                 .anyRequest()
                                 .authenticated()
                 )
