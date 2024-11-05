@@ -4,10 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
@@ -25,6 +22,5 @@ public class AuthenticationRequestDto {
             message = "Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character and no spaces"
     )
     private String password;
-    @NotBlank(message = "Remember me is required")
-    private boolean rememberMe;
+    private Boolean rememberMe;
 }

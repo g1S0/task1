@@ -44,6 +44,10 @@ public class AuthController {
     public ResponseEntity<AuthenticationResponseDto> authenticate(
             @RequestBody @Valid AuthenticationRequestDto request
     ) {
+        if (request.getRememberMe() == null) {
+            request.setRememberMe(false);
+        }
+
         return ResponseEntity.ok(service.authenticate(request));
     }
 }

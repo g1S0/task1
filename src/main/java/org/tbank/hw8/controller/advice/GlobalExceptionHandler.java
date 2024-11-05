@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.tbank.hw5.dto.ResponseDto;
-import org.tbank.hw8.exception.CurrencyIsNotSupportedByCbException;
-import org.tbank.hw8.exception.InvalidAuthorizationHeaderException;
-import org.tbank.hw8.exception.UnsupportedCurrencyException;
-import org.tbank.hw8.exception.ServiceUnavailableException;
+import org.tbank.hw8.exception.*;
 import org.tbank.hw8.exception.model.CustomErrorResponse;
 
 import java.util.HashMap;
@@ -69,5 +66,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomErrorResponse> handleGenericException(Exception ex) {
         return buildErrorResponse("Unknown error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InvalidConfirmationCodeException.class)
+    public ResponseEntity<CustomErrorResponse> handleInvalidConfirmationCodeException(InvalidConfirmationCodeException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
