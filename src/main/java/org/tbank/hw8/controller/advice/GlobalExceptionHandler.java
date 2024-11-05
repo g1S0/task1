@@ -6,7 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.tbank.hw5.dto.ResponseDto;
 import org.tbank.hw8.exception.CurrencyIsNotSupportedByCbException;
+import org.tbank.hw8.exception.InvalidAuthorizationHeaderException;
 import org.tbank.hw8.exception.UnsupportedCurrencyException;
 import org.tbank.hw8.exception.ServiceUnavailableException;
 import org.tbank.hw8.exception.model.CustomErrorResponse;
@@ -31,6 +34,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnsupportedCurrencyException.class)
     public ResponseEntity<CustomErrorResponse> handleUnsupportedCurrency(UnsupportedCurrencyException ex) {
         return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidAuthorizationHeaderException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ResponseDto<String>> handleInvalidAuthorizationHeaderException(InvalidAuthorizationHeaderException ex) {
+        ResponseDto<String> response = new ResponseDto<>(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CurrencyIsNotSupportedByCbException.class)
