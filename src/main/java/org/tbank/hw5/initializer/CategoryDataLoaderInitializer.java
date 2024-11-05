@@ -1,5 +1,6 @@
 package org.tbank.hw5.initializer;
 
+import lombok.AllArgsConstructor;
 import org.example.annotation.LogExecutionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,27 +11,23 @@ import org.tbank.hw5.client.CategoryApiClient;
 import org.tbank.hw5.dto.CategoryDto;
 import org.tbank.hw5.mapper.CategoryMapper;
 import org.tbank.hw5.model.Category;
-import org.tbank.hw5.storage.impl.CategoryStorage;
+import org.tbank.hw5.storage.DataObserver;
 
 import java.util.List;
 
 @Component
-public class CategoryDataLoaderInitializer {
+@AllArgsConstructor
+public class CategoryDataLoaderInitializer implements Command {
     private static final Logger logger = LoggerFactory.getLogger(CategoryDataLoaderInitializer.class);
 
     private final CategoryApiClient categoryApiClient;
-    private final CategoryStorage categoryStorage;
+    private final List<DataObserver<Category>> dataObservers;
     private final CategoryMapper categoryMapper;
 
-    CategoryDataLoaderInitializer(CategoryApiClient categoryApiClient, CategoryStorage categoryStorage, CategoryMapper categoryMapper) {
-        this.categoryApiClient = categoryApiClient;
-        this.categoryStorage = categoryStorage;
-        this.categoryMapper = categoryMapper;
-    }
-
+    @Override
     @EventListener(ApplicationReadyEvent.class)
     @LogExecutionTime
-    public void initializeCategories() {
+    public void execute() {
         logger.info("Starting data source for categories");
 
         List<CategoryDto> categoriesDto = categoryApiClient.fetchCategories();
@@ -38,14 +35,18 @@ public class CategoryDataLoaderInitializer {
         List<Category> categories = categoryMapper.toCategoryList(categoriesDto);
 
         if (categories != null) {
-            for (Category category : categories) {
-                categoryStorage.save(category.getId(), category);
-            }
+            notifyObservers(dataObservers, categories);
             logger.info("Data source successfully initialized with {} categories.", categories.size());
         } else {
             logger.warn("No locations found to initialize data source.");
         }
 
         logger.info("Data source initialization completed.");
+    }
+
+    private <T> void notifyObservers(List<DataObserver<T>> observers, List<T> data) {
+        for (DataObserver<T> observer : observers) {
+            observer.update(data);
+        }
     }
 }
