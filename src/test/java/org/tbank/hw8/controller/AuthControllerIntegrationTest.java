@@ -12,7 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.tbank.hw8.dto.*;
 import org.tbank.hw8.entity.Role;
 import org.tbank.hw8.entity.User;
-import org.tbank.hw8.service.impl.AuthService;
+import org.tbank.hw8.service.AuthService;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;

@@ -1,4 +1,4 @@
-package org.tbank.hw8.service.impl;
+package org.tbank.hw8.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

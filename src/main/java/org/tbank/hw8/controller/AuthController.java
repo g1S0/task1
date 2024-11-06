@@ -12,7 +12,7 @@ import org.tbank.hw8.dto.AuthenticationResponseDto;
 import org.tbank.hw8.dto.RegisterRequestDto;
 import org.tbank.hw8.entity.Role;
 import org.tbank.hw8.entity.User;
-import org.tbank.hw8.service.impl.AuthService;
+import org.tbank.hw8.service.AuthService;
 
 @RestController
 @RequestMapping("/api/v1/auth")

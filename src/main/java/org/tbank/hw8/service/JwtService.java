@@ -1,4 +1,4 @@
-package org.tbank.hw8.service.impl;
+package org.tbank.hw8.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tbank.hw8.dto.ChangePasswordRequestDto;
 import org.tbank.hw8.exception.InvalidConfirmationCodeException;
-import org.tbank.hw8.service.impl.AuthService;
+import org.tbank.hw8.service.AuthService;
 
 import java.security.Principal;
 

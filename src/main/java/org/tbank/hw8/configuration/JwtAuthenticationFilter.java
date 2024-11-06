@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.tbank.hw8.repository.TokenRepository;
-import org.tbank.hw8.service.impl.JwtService;
+import org.tbank.hw8.service.JwtService;
 
 import java.io.IOException;
 

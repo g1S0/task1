@@ -1,4 +1,4 @@
-package org.tbank.hw8.service.impl;
+package org.tbank.hw8.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

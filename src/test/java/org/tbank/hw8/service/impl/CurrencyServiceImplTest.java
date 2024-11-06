@@ -9,6 +9,7 @@ import org.tbank.hw8.client.CurrencyApiClient;
 import org.tbank.hw8.dto.ConvertedAmountDto;
 import org.tbank.hw8.dto.CurrencyConversionRequestDto;
 import org.tbank.hw8.model.Valute;
+import org.tbank.hw8.service.CurrencyService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ class CurrencyServiceImplTest {
     private CurrencyApiClient currencyApiClient;
 
     @InjectMocks
-    private CurrencyServiceImpl currencyService;
+    private CurrencyService currencyService;
 
     @BeforeEach
     void setUp() {
