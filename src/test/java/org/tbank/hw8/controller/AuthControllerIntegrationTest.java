@@ -1,5 +1,6 @@
 package org.tbank.hw8.controller;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,16 +10,39 @@ import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.tbank.hw8.dto.*;
+import org.tbank.hw8.entity.Role;
+import org.tbank.hw8.entity.User;
+import org.tbank.hw8.service.impl.AuthService;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Testcontainers
 public class AuthControllerIntegrationTest {
+
+    @Container
+    public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
+            .withDatabaseName("admin")
+            .withUsername("admin")
+            .withPassword("user_data");
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Autowired
+    private AuthService authService;
+
+    @BeforeAll
+    public static void setUp() {
+        System.setProperty("DB_URL", postgres.getJdbcUrl());
+        System.setProperty("DB_USERNAME", postgres.getUsername());
+        System.setProperty("DB_PASSWORD", postgres.getPassword());
+    }
 
     private String registerUser() {
         RegisterRequestDto registerRequest = new RegisterRequestDto();
