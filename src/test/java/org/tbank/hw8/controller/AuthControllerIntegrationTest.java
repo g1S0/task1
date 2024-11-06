@@ -152,4 +152,65 @@ public class AuthControllerIntegrationTest {
 
         assertEquals(HttpStatus.FORBIDDEN, currencyRateResponse.getStatusCode());
     }
+
+    @Test
+    @DirtiesContext
+    void testConvertCurrencyAsAdmin() {
+        String adminToken = registerAdminUser();
+
+        CurrencyConversionRequestDto conversionRequest = new CurrencyConversionRequestDto();
+        conversionRequest.setFromCurrency("USD");
+        conversionRequest.setToCurrency("EUR");
+        conversionRequest.setAmount(100.0);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(adminToken);
+
+        ResponseEntity<ConvertedAmountDto> conversionResponse = restTemplate
+                .exchange("/currencies/convert", HttpMethod.POST, new HttpEntity<>(conversionRequest, headers), ConvertedAmountDto.class);
+
+        assertEquals(HttpStatus.OK, conversionResponse.getStatusCode());
+        assertNotNull(conversionResponse.getBody());
+    }
+
+    private String registerAdminUser() {
+        User user = new User();
+        user.setFirstName("Admin");
+        user.setSecondName("User");
+        user.setEmail("admin@example.com");
+        user.setPassword("Admin@123)");
+        user.setRole(Role.ADMIN);
+
+        return authService.register(user).getToken();
+    }
+
+    @Test
+    @DirtiesContext
+    void testConvertCurrencyAsUser() {
+        String userToken = registerRegularUser();
+
+        CurrencyConversionRequestDto conversionRequest = new CurrencyConversionRequestDto();
+        conversionRequest.setFromCurrency("USD");
+        conversionRequest.setToCurrency("EUR");
+        conversionRequest.setAmount(100.0);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(userToken);
+
+        ResponseEntity<ConvertedAmountDto> conversionResponse = restTemplate
+                .exchange("/currencies/convert", HttpMethod.POST, new HttpEntity<>(conversionRequest, headers), ConvertedAmountDto.class);
+
+        assertEquals(HttpStatus.FORBIDDEN, conversionResponse.getStatusCode());
+    }
+
+    private String registerRegularUser() {
+        User user = new User();
+        user.setFirstName("Regular");
+        user.setSecondName("User");
+        user.setEmail("user@example.com");
+        user.setPassword("User@123)");
+        user.setRole(Role.USER);
+
+        return authService.register(user).getToken();
+    }
 }
