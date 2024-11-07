@@ -7,8 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -40,9 +41,6 @@ public class AuthControllerIntegrationTest {
             .withPassword("user_data");
 
     @Autowired
-    private TestRestTemplate restTemplate;
-
-    @Autowired
     private AuthService authService;
 
     @Autowired
@@ -55,54 +53,62 @@ public class AuthControllerIntegrationTest {
         System.setProperty("DB_PASSWORD", postgres.getPassword());
     }
 
-    private String registerUser() {
+    private String registerUser() throws Exception {
         RegisterRequestDto registerRequest = new RegisterRequestDto();
         registerRequest.setFirstName("John");
         registerRequest.setSecondName("Doe");
         registerRequest.setEmail("john.doe@example.com");
         registerRequest.setPassword("Password@123)");
 
-        ResponseEntity<AuthenticationResponseDto> response = restTemplate
-                .postForEntity("/api/v1/auth/register", registerRequest, AuthenticationResponseDto.class);
+        String registerRequestJson = new ObjectMapper().writeValueAsString(registerRequest);
+        MvcResult mvcResult = mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registerRequestJson))
+                .andExpect(status().isOk())
+                .andReturn();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        return response.getBody().getToken();
+        String responseJson = mvcResult.getResponse().getContentAsString();
+        AuthenticationResponseDto response = new ObjectMapper().readValue(responseJson, AuthenticationResponseDto.class);
+
+        assertNotNull(response);
+        return response.getToken();
     }
 
-    private void resetPassword(String token, ChangePasswordRequestDto changePasswordRequest) {
+    private void resetPassword(String token, ChangePasswordRequestDto changePasswordRequest) throws Exception {
+        String changePasswordRequestJson = new ObjectMapper().writeValueAsString(changePasswordRequest);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
 
-        ResponseEntity<Void> resetPasswordResponse = restTemplate.exchange(
-                "/api/v1/user/reset-password",
-                HttpMethod.POST,
-                new HttpEntity<>(changePasswordRequest, headers),
-                Void.class
-        );
-
-        assertEquals(HttpStatus.OK, resetPasswordResponse.getStatusCode());
+        mockMvc.perform(post("/api/v1/user/reset-password")
+                        .headers(headers)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(changePasswordRequestJson))
+                .andExpect(status().isOk());
     }
 
     @Test
     @DirtiesContext
-    void testRegister() {
+    void testRegister() throws Exception {
         String token = registerUser();
         assertNotNull(token);
     }
 
     @Test
     @DirtiesContext
-    void testRegisterAndGetCurrencyRate() {
+    void testRegisterAndGetCurrencyRate() throws Exception {
         String token = registerUser();
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
+        MvcResult currencyRateResult = mockMvc.perform(get("/currencies/rates/USD")
+                        .headers(headers))
+                .andExpect(status().isOk())
+                .andReturn();
+        String responseJson = currencyRateResult.getResponse().getContentAsString();
+        CurrencyRateDto currencyRateResponse = new ObjectMapper().readValue(responseJson, CurrencyRateDto.class);
 
-        ResponseEntity<CurrencyRateDto> currencyRateResponse = restTemplate
-                .exchange("/currencies/rates/USD", HttpMethod.GET, new HttpEntity<>(headers), CurrencyRateDto.class);
-
-        assertEquals(HttpStatus.OK, currencyRateResponse.getStatusCode());
-        assertNotNull(currencyRateResponse.getBody());
+        assertNotNull(currencyRateResponse);
     }
 
     @Test
@@ -159,29 +165,25 @@ public class AuthControllerIntegrationTest {
 
     @Test
     @DirtiesContext
-    void testLogout() {
+    void testLogout() throws Exception {
         String token = registerUser();
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
 
-        ResponseEntity<Void> logoutResponse = restTemplate.exchange(
-                "/api/v1/auth/logout",
-                HttpMethod.POST,
-                new HttpEntity<>(headers),
-                Void.class
-        );
+        mockMvc.perform(post("/api/v1/auth/logout")
+                        .headers(headers))
+                .andExpect(status().isOk());
 
-        assertEquals(HttpStatus.OK, logoutResponse.getStatusCode());
-
-        ResponseEntity<CurrencyRateDto> currencyRateResponse = restTemplate
-                .exchange("/currencies/rates/USD", HttpMethod.GET, new HttpEntity<>(headers), CurrencyRateDto.class);
-
-        assertEquals(HttpStatus.FORBIDDEN, currencyRateResponse.getStatusCode());
+        mockMvc.perform(get("/currencies/rates/USD")
+                        .headers(headers))
+                .andExpect(status().isForbidden())
+                .andReturn();
     }
 
     @Test
     @DirtiesContext
-    void testConvertCurrencyAsAdmin() {
+    void testConvertCurrencyAsAdmin() throws Exception {
         String adminToken = registerAdminUser();
 
         CurrencyConversionRequestDto conversionRequest = new CurrencyConversionRequestDto();
@@ -189,14 +191,22 @@ public class AuthControllerIntegrationTest {
         conversionRequest.setToCurrency("EUR");
         conversionRequest.setAmount(100.0);
 
+        String conversionRequestJson = new ObjectMapper().writeValueAsString(conversionRequest);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(adminToken);
 
-        ResponseEntity<ConvertedAmountDto> conversionResponse = restTemplate
-                .exchange("/currencies/convert", HttpMethod.POST, new HttpEntity<>(conversionRequest, headers), ConvertedAmountDto.class);
+        MvcResult conversionResult = mockMvc.perform(post("/currencies/convert")
+                        .headers(headers)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(conversionRequestJson))
+                .andExpect(status().isOk())
+                .andReturn();
 
-        assertEquals(HttpStatus.OK, conversionResponse.getStatusCode());
-        assertNotNull(conversionResponse.getBody());
+        String responseJson = conversionResult.getResponse().getContentAsString();
+        ConvertedAmountDto conversionResponse = new ObjectMapper().readValue(responseJson, ConvertedAmountDto.class);
+
+        assertNotNull(conversionResponse);
     }
 
     private String registerAdminUser() {
@@ -212,7 +222,7 @@ public class AuthControllerIntegrationTest {
 
     @Test
     @DirtiesContext
-    void testConvertCurrencyAsUser() {
+    void testConvertCurrencyAsUser() throws Exception {
         String userToken = registerRegularUser();
 
         CurrencyConversionRequestDto conversionRequest = new CurrencyConversionRequestDto();
@@ -220,13 +230,17 @@ public class AuthControllerIntegrationTest {
         conversionRequest.setToCurrency("EUR");
         conversionRequest.setAmount(100.0);
 
+        String conversionRequestJson = new ObjectMapper().writeValueAsString(conversionRequest);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(userToken);
 
-        ResponseEntity<ConvertedAmountDto> conversionResponse = restTemplate
-                .exchange("/currencies/convert", HttpMethod.POST, new HttpEntity<>(conversionRequest, headers), ConvertedAmountDto.class);
-
-        assertEquals(HttpStatus.FORBIDDEN, conversionResponse.getStatusCode());
+        mockMvc.perform(post("/currencies/convert")
+                        .headers(headers)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(conversionRequestJson))
+                .andExpect(status().isForbidden())
+                .andReturn();
     }
 
     private String registerRegularUser() {
