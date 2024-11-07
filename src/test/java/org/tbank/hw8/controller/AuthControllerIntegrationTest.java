@@ -1,14 +1,18 @@
 package org.tbank.hw8.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.tbank.hw8.dto.*;
 import org.tbank.hw8.entity.Role;
 import org.tbank.hw8.entity.User;
@@ -19,9 +23,13 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
 @Testcontainers
 public class AuthControllerIntegrationTest {
 
@@ -36,6 +44,9 @@ public class AuthControllerIntegrationTest {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @BeforeAll
     public static void setUp() {
@@ -73,13 +84,6 @@ public class AuthControllerIntegrationTest {
         assertEquals(HttpStatus.OK, resetPasswordResponse.getStatusCode());
     }
 
-    private ResponseEntity<AuthenticationResponseDto> authenticate(String email, String password) {
-        AuthenticationRequestDto authRequest = new AuthenticationRequestDto();
-        authRequest.setEmail(email);
-        authRequest.setPassword(password);
-        return restTemplate.postForEntity("/api/v1/auth/authenticate", authRequest, AuthenticationResponseDto.class);
-    }
-
     @Test
     @DirtiesContext
     void testRegister() {
@@ -103,7 +107,7 @@ public class AuthControllerIntegrationTest {
 
     @Test
     @DirtiesContext
-    void testResetPassword() {
+    void testResetPassword() throws Exception {
         String token = registerUser();
 
         ChangePasswordRequestDto changePasswordRequest = new ChangePasswordRequestDto();
@@ -113,22 +117,44 @@ public class AuthControllerIntegrationTest {
         changePasswordRequest.setConfirmationPassword("NewPassword@123)");
 
         resetPassword(token, changePasswordRequest);
+        MvcResult oldTokenResult = authenticate("john.doe@example.com", "Password@123)");
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), oldTokenResult.getResponse().getStatus());
 
-        ResponseEntity<AuthenticationResponseDto> oldTokenResponse = authenticate("john.doe@example.com", "Password@123)");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, oldTokenResponse.getStatusCode());
+        MvcResult newAuthResult = authenticate("john.doe@example.com", "NewPassword@123)");
+        assertEquals(HttpStatus.OK.value(), newAuthResult.getResponse().getStatus());
 
-        ResponseEntity<AuthenticationResponseDto> newAuthResponse = authenticate("john.doe@example.com", "NewPassword@123)");
-        assertEquals(HttpStatus.OK, newAuthResponse.getStatusCode());
-        assertNotNull(newAuthResponse.getBody());
-        String newToken = newAuthResponse.getBody().getToken();
+        String newAuthResponseBody = newAuthResult.getResponse().getContentAsString();
+        AuthenticationResponseDto newAuthResponse = new ObjectMapper().readValue(newAuthResponseBody, AuthenticationResponseDto.class);
+        assertNotNull(newAuthResponse);
+        String newToken = newAuthResponse.getToken();
         assertNotNull(newToken);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(newToken);
-        ResponseEntity<CurrencyRateDto> currencyRateResponse = restTemplate
-                .exchange("/currencies/rates/USD", HttpMethod.GET, new HttpEntity<>(headers), CurrencyRateDto.class);
 
-        assertEquals(HttpStatus.OK, currencyRateResponse.getStatusCode());
+        MvcResult currencyRateResult = mockMvc.perform(get("/currencies/rates/USD")
+                        .headers(headers))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String currencyRateResponseBody = currencyRateResult.getResponse().getContentAsString();
+        CurrencyRateDto currencyRateResponse = new ObjectMapper().readValue(currencyRateResponseBody, CurrencyRateDto.class);
+
+        assertEquals(HttpStatus.OK.value(), currencyRateResult.getResponse().getStatus());
+        assertNotNull(currencyRateResponse);
+    }
+
+    private MvcResult authenticate(String email, String password) throws Exception {
+        AuthenticationRequestDto authRequest = new AuthenticationRequestDto();
+        authRequest.setEmail(email);
+        authRequest.setPassword(password);
+
+        String authRequestJson = new ObjectMapper().writeValueAsString(authRequest);
+
+        return mockMvc.perform(post("/api/v1/auth/authenticate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(authRequestJson))
+                .andReturn();
     }
 
     @Test
