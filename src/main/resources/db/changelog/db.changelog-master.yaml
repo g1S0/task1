@@ -70,11 +70,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: expired
-                  type: BOOLEAN
-                  constraints:
-                    nullable: false
-              - column:
                   name: user_id
                   type: INT
                   constraints:
