@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: src/main/resources/db/changelog/db.changelog-places.yaml
+  - include:
+      file: src/main/resources/db/changelog/db.changelog-events.yaml
