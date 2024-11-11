@@ -1,11 +1,14 @@
 package org.tbank.hw3.CustomLinkedListTest;
 
+import org.tbank.hw3.CustomLinkedList.CustomIterator;
 import org.tbank.hw3.CustomLinkedList.CustomLinkedList;
 import org.junit.jupiter.api.Test;
 import org.tbank.hw3.model.Person;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,6 +20,57 @@ public class CustomLinkedListTest {
                 .forEach(list::add);
 
         return list;
+    }
+
+    private final CustomLinkedList<String> linkedList = new CustomLinkedList<>();
+
+    @Test
+    void testIterator_hasNextOnEmptyList() {
+        CustomIterator<String> iterator = linkedList.iterator();
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    void testIterator_hasNext() {
+        linkedList.add("Element 1");
+        linkedList.add("Element 2");
+        CustomIterator<String> iterator = linkedList.iterator();
+        assertTrue(iterator.hasNext());
+    }
+
+    @Test
+    void testIterator_next() {
+        linkedList.add("Element 1");
+        linkedList.add("Element 2");
+
+        CustomIterator<String> iterator = linkedList.iterator();
+        assertEquals("Element 1", iterator.next());
+        assertEquals("Element 2", iterator.next());
+    }
+
+    @Test
+    void testIterator_forEachRemaining() {
+        linkedList.add("Element 1");
+        linkedList.add("Element 2");
+        linkedList.add("Element 3");
+
+        List<String> result = new ArrayList<>();
+        CustomIterator<String> iterator = linkedList.iterator();
+
+        Consumer<String> consumer = result::add;
+        iterator.forEachRemaining(consumer);
+
+        List<String> expected = List.of("Element 1", "Element 2", "Element 3");
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void testIterator_throwsExceptionOnNextWithoutHasNext() {
+        linkedList.add("Element 1");
+        CustomIterator<String> iterator = linkedList.iterator();
+
+        iterator.next();
+        assertThrows(IllegalStateException.class, iterator::next);
     }
 
     @Test

@@ -1,47 +1,52 @@
 package org.tbank.hw5.initializer;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
 import org.example.annotation.LogExecutionTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.tbank.hw5.client.LocationApiClient;
-import org.tbank.hw5.dto.LocationDto;
-import org.tbank.hw5.mapper.LocationMapper;
-import org.tbank.hw5.model.Location;
-import org.tbank.hw5.storage.impl.LocationStorage;
+import org.tbank.hw5.client.CategoryApiClient;
+import org.tbank.hw5.dto.CategoryDto;
+import org.tbank.hw5.mapper.CategoryMapper;
+import org.tbank.hw5.model.Category;
+import org.tbank.hw5.storage.DataObserver;
 
 import java.util.List;
 
 @Component
-@Slf4j
-public class LocationDataLoaderInitializer {
-    private final LocationApiClient locationApiClient;
-    private final LocationStorage locationStorage;
-    private final LocationMapper locationMapper;
+@AllArgsConstructor
+public class CategoryDataLoaderInitializer implements Command {
+    private static final Logger logger = LoggerFactory.getLogger(CategoryDataLoaderInitializer.class);
 
-    public LocationDataLoaderInitializer(LocationApiClient locationApiClient, LocationStorage locationStorage, LocationMapper locationMapper) {
-        this.locationApiClient = locationApiClient;
-        this.locationStorage = locationStorage;
-        this.locationMapper = locationMapper;
-    }
+    private final CategoryApiClient categoryApiClient;
+    private final List<DataObserver<Category>> dataObservers;
+    private final CategoryMapper categoryMapper;
 
-
+    @Override
+    @EventListener(ApplicationReadyEvent.class)
     @LogExecutionTime
-    public void initializeLocations() {
-        log.info("Starting location data source for locations");
+    public void execute() {
+        logger.info("Starting data source for categories");
 
-        List<LocationDto> locationsDto = locationApiClient.fetchLocations();
+        List<CategoryDto> categoriesDto = categoryApiClient.fetchCategories();
 
-        List<Location> locations = locationMapper.toLocationList(locationsDto);
-        locationStorage.clear();
-        if (locations != null) {
-            for (Location location : locations) {
-                locationStorage.save(location.getSlug(), location);
-            }
-            log.info("Location data source successfully initialized with {} locations.", locations.size());
+        List<Category> categories = categoryMapper.toCategoryList(categoriesDto);
+
+        if (categories != null) {
+            notifyObservers(dataObservers, categories);
+            logger.info("Data source successfully initialized with {} categories.", categories.size());
         } else {
-            log.warn("No locations found to initialize data source.");
+            logger.warn("No locations found to initialize data source.");
         }
 
-        log.info("Location data source initialization completed.");
+        logger.info("Data source initialization completed.");
+    }
+
+    private <T> void notifyObservers(List<DataObserver<T>> observers, List<T> data) {
+        for (DataObserver<T> observer : observers) {
+            observer.update(data);
+        }
     }
 }

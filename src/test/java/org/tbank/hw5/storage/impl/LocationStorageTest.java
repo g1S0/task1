@@ -4,13 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.tbank.hw5.exception.EntityAlreadyExistsException;
 import org.tbank.hw5.exception.EntityNotFoundException;
 import org.tbank.hw5.model.Location;
+import org.tbank.hw5.storage.memento.Memento;
+import org.tbank.hw5.storage.memento.OperationType;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class LocationStorageTest {
-
     private static final String LOCATION_SLUG_EKB = "ekb";
     private static final String LOCATION_SLUG_SPB = "spb";
     private static final String LOCATION_NAME_EKB = "Екатеринбург";
@@ -30,7 +31,6 @@ class LocationStorageTest {
         LocationStorage locationStorage = getLocationStorage();
 
         Location location = createLocation(LOCATION_SLUG_EKB, LOCATION_NAME_EKB);
-
         locationStorage.save(LOCATION_SLUG_EKB, location);
         Location foundLocation = locationStorage.findById(LOCATION_SLUG_EKB);
 
@@ -130,5 +130,58 @@ class LocationStorageTest {
         assertThrows(EntityNotFoundException.class, () -> {
             locationStorage.deleteById(LOCATION_SLUG_EKB);
         });
+    }
+
+    @Test
+    void testSaveCreatesMemento() throws EntityAlreadyExistsException {
+        LocationStorage locationStorage = getLocationStorage();
+
+        Location location = createLocation(LOCATION_SLUG_EKB, LOCATION_NAME_EKB);
+        locationStorage.save(LOCATION_SLUG_EKB, location);
+
+        List<Memento<Location>> history = locationStorage.getHistory(LOCATION_SLUG_EKB);
+        assertEquals(1, history.size());
+        assertEquals(OperationType.CREATE, history.get(0).getOperationType());
+        assertEquals(location, history.get(0).getState());
+    }
+
+    @Test
+    void testUpdateCreatesMemento() throws EntityAlreadyExistsException {
+        LocationStorage locationStorage = getLocationStorage();
+
+        Location location = createLocation(LOCATION_SLUG_EKB, LOCATION_NAME_EKB);
+        locationStorage.save(LOCATION_SLUG_EKB, location);
+
+        Location updatedLocation = createLocation(LOCATION_SLUG_EKB, UPDATED_LOCATION_NAME_KRD);
+        locationStorage.update(LOCATION_SLUG_EKB, updatedLocation.getSlug(), updatedLocation);
+
+        List<Memento<Location>> history = locationStorage.getHistory(LOCATION_SLUG_EKB);
+        assertEquals(2, history.size());
+        assertEquals(OperationType.UPDATE, history.get(1).getOperationType());
+        assertEquals(location, history.get(0).getState());
+        assertEquals(updatedLocation, history.get(1).getState());
+    }
+
+    @Test
+    void testDeleteCreatesMemento() throws EntityAlreadyExistsException {
+        LocationStorage locationStorage = getLocationStorage();
+
+        Location location = createLocation(LOCATION_SLUG_EKB, LOCATION_NAME_EKB);
+        locationStorage.save(LOCATION_SLUG_EKB, location);
+
+        locationStorage.deleteById(LOCATION_SLUG_EKB);
+
+        List<Memento<Location>> history = locationStorage.getHistory(LOCATION_SLUG_EKB);
+        assertEquals(2, history.size());
+        assertEquals(OperationType.DELETE, history.get(1).getOperationType());
+        assertEquals(location, history.get(1).getState());
+    }
+
+    @Test
+    void testGetHistoryReturnsEmptyForNonexistentId() {
+        LocationStorage locationStorage = getLocationStorage();
+
+        List<Memento<Location>> history = locationStorage.getHistory(LOCATION_SLUG_EKB);
+        assertTrue(history.isEmpty());
     }
 }

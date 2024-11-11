@@ -4,13 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.tbank.hw5.exception.EntityAlreadyExistsException;
 import org.tbank.hw5.exception.EntityNotFoundException;
 import org.tbank.hw5.model.Category;
+import org.tbank.hw5.storage.memento.Memento;
+import org.tbank.hw5.storage.memento.OperationType;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CategoryStorageTest {
-
     private static final Long CATEGORY_ID_1 = 123L;
     private static final Long CATEGORY_ID_2 = 456L;
     private static final String CATEGORY_SLUG_1 = "airport";
@@ -135,5 +136,62 @@ class CategoryStorageTest {
         assertThrows(EntityNotFoundException.class, () -> {
             categoryStorage.deleteById(CATEGORY_ID_1);
         });
+    }
+
+    @Test
+    void testSaveCreatesMemento() throws EntityAlreadyExistsException {
+        CategoryStorage categoryStorage = getCategoryStorage();
+
+        Category category = createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, CATEGORY_NAME_1);
+        categoryStorage.save(CATEGORY_ID_1, category);
+
+        List<Memento<Category>> history = categoryStorage.getHistory(CATEGORY_ID_1);
+        assertEquals(1, history.size());
+        assertEquals(OperationType.CREATE, history.getFirst().getOperationType());
+        assertEquals(category, history.getFirst().getState());
+    }
+
+    @Test
+    void testUpdateCreatesMemento() throws EntityAlreadyExistsException {
+        CategoryStorage categoryStorage = getCategoryStorage();
+
+        Category category = createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, CATEGORY_NAME_1);
+        categoryStorage.save(CATEGORY_ID_1, category);
+
+        Category updatedCategory = createCategory(CATEGORY_ID_1, UPDATED_CATEGORY_SLUG, UPDATED_CATEGORY_NAME);
+        categoryStorage.update(updatedCategory.getId(), category.getId(), updatedCategory);
+
+        List<Memento<Category>> history = categoryStorage.getHistory(CATEGORY_ID_1);
+
+        assertEquals(2, history.size());
+
+        assertEquals(OperationType.UPDATE, history.get(1).getOperationType());
+        assertEquals(category, history.get(0).getState());
+        assertEquals(updatedCategory, history.get(1).getState());
+    }
+
+    @Test
+    void testDeleteCreatesMemento() throws EntityAlreadyExistsException {
+        CategoryStorage categoryStorage = getCategoryStorage();
+
+        Category category = createCategory(CATEGORY_ID_1, CATEGORY_SLUG_1, CATEGORY_NAME_1);
+        categoryStorage.save(CATEGORY_ID_1, category);
+
+        categoryStorage.deleteById(CATEGORY_ID_1);
+
+        List<Memento<Category>> history = categoryStorage.getHistory(CATEGORY_ID_1);
+
+        assertEquals(2, history.size());
+
+        assertEquals(OperationType.DELETE, history.get(1).getOperationType());
+        assertEquals(category, history.get(1).getState());
+    }
+
+    @Test
+    void testGetHistoryReturnsEmptyForNonexistentId() {
+        CategoryStorage categoryStorage = getCategoryStorage();
+
+        List<Memento<Category>> history = categoryStorage.getHistory(CATEGORY_ID_1);
+        assertTrue(history.isEmpty());
     }
 }
