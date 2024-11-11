@@ -20,7 +20,7 @@ import java.security.Principal;
 @AllArgsConstructor
 @Slf4j
 public class AuthService {
-    private final UserRepository repository;
+    private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -29,7 +29,7 @@ public class AuthService {
     public AuthenticationResponseDto register(User user) {
         log.debug("Registering user with email: {}", user.getEmail());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        var savedUser = repository.save(user);
+        var savedUser = userRepository.save(user);
         var token = jwtService.generateToken(user);
         saveUserToken(savedUser, token);
 
@@ -47,7 +47,7 @@ public class AuthService {
                         request.getPassword()
                 )
         );
-        var user = repository.findByEmail(request.getEmail())
+        var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         var token = jwtService.generateTokenWithRememberMeParameters(user, request.getRememberMe());
         revokeAllUserTokens(user);
@@ -95,7 +95,7 @@ public class AuthService {
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        repository.save(user);
+        userRepository.save(user);
         log.info("Password successfully changed for user: {}", user.getEmail());
     }
 }
