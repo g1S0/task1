@@ -1,5 +1,6 @@
 package org.tbank.hw8.service;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +27,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    @Transactional
     public AuthenticationResponseDto register(User user) {
         log.debug("Registering user with email: {}", user.getEmail());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -39,6 +41,7 @@ public class AuthService {
                 .build();
     }
 
+    @Transactional
     public AuthenticationResponseDto authenticate(AuthenticationRequestDto request) {
         log.debug("Authenticating user with email: {}", request.getEmail());
         authenticationManager.authenticate(
