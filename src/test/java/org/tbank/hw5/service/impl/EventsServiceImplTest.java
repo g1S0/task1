@@ -10,6 +10,7 @@ import org.tbank.hw5.client.EventsClient;
 import org.tbank.hw5.dto.EventDto;
 import org.tbank.hw5.dto.EventsRequestDto;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +32,7 @@ class EventsServiceImplTest {
 
     @Test
     void testGetEvents_Success() {
-        EventsRequestDto request = new EventsRequestDto(1000L, "RUB", null, null);
+        EventsRequestDto request = new EventsRequestDto(BigDecimal.valueOf(1000), "RUB", null, null);
 
         List<EventDto> events = Arrays.asList(
                 new EventDto("Event 1", "100"),
@@ -40,7 +41,7 @@ class EventsServiceImplTest {
         );
 
         when(eventsClient.getEvents(anyLong(), anyLong())).thenReturn(events);
-        when(currencyClient.convertCurrency(anyDouble())).thenReturn(500.0);
+        when(currencyClient.convertCurrency(any(BigDecimal.class))).thenReturn(BigDecimal.valueOf(500));
 
         List<EventDto> resultFuture = eventsService.getEvents(request);
 
@@ -51,7 +52,7 @@ class EventsServiceImplTest {
 
     @Test
     void testGetEventsWithProjectReactor_Success() {
-        EventsRequestDto request = new EventsRequestDto(1000L, "RUB", null, null);
+        EventsRequestDto request = new EventsRequestDto(BigDecimal.valueOf(1000), "RUB", null, null);
 
         List<EventDto> events = Arrays.asList(
                 new EventDto("Event 1", "100"),
@@ -60,7 +61,7 @@ class EventsServiceImplTest {
         );
 
         when(eventsClient.getEvents(anyLong(), anyLong())).thenReturn(events);
-        when(currencyClient.convertCurrency(anyDouble())).thenReturn(500.0);
+        when(currencyClient.convertCurrency(any(BigDecimal.class))).thenReturn(BigDecimal.valueOf(500));
 
         List<EventDto> resultFuture = eventsService.getEventsWithProjectReactor(request);
 

@@ -2,6 +2,7 @@ package org.tbank.hw5.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
@@ -14,7 +15,7 @@ import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 @Data
 public class EventsRequestDto {
-    private double budget;
+    private BigDecimal budget;
     private String currency;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
@@ -25,7 +26,7 @@ public class EventsRequestDto {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    public EventsRequestDto(double budget, String currency, String dateFrom, String dateTo) {
+    public EventsRequestDto(BigDecimal budget, String currency, String dateFrom, String dateTo) {
         this.budget = budget;
         this.currency = currency;
         this.dateFrom = (dateFrom != null && !dateFrom.isEmpty()) ? LocalDate.parse(dateFrom, formatter) : getStartOfCurrentWeek();

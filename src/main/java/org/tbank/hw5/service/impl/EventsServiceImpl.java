@@ -7,12 +7,11 @@ import org.tbank.hw5.client.EventsClient;
 import org.tbank.hw5.dto.EventDto;
 import org.tbank.hw5.dto.EventsRequestDto;
 import org.tbank.hw5.service.EventsService;
-import org.tbank.hw5.utils.StringToNumberUtils;
 import reactor.core.publisher.Mono;
 
-import java.util.concurrent.CompletableFuture;
-
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +37,7 @@ public class EventsServiceImpl implements EventsService {
                     eventsRequestDto.getDateToAsUnixTimestamp());
         });
 
-        Mono<Double> convertedBudgetMono = Mono.fromCallable(() -> {
+        Mono<BigDecimal> convertedBudgetMono = Mono.fromCallable(() -> {
             log.info("Converting budget: {}", eventsRequestDto.getBudget());
             return currencyClient.convertCurrency(eventsRequestDto.getBudget());
         });
@@ -46,16 +45,25 @@ public class EventsServiceImpl implements EventsService {
         return Mono.zip(eventsMono, convertedBudgetMono)
                 .flatMap(tuple -> {
                     List<EventDto> events = tuple.getT1();
-                    Double convertedBudget = tuple.getT2();
+                    BigDecimal convertedBudget = tuple.getT2();
 
                     log.info("Events fetched: {}", events.size());
                     log.info("Converted budget: {}", convertedBudget);
 
                     List<EventDto> filteredEvents = events.stream()
                             .filter(event -> {
-                                double price = StringToNumberUtils.getNumberFromString(event.getPrice());
+                                BigDecimal price;
+                                try {
+                                    if (event.getPrice() == null || event.getPrice().trim().isEmpty()) {
+                                        price = BigDecimal.ZERO;
+                                    } else {
+                                        price = new BigDecimal(event.getPrice().trim());
+                                    }
+                                } catch (NumberFormatException e) {
+                                    price = BigDecimal.ZERO;
+                                }
                                 log.info("Checking event price: {}, converted budget: {}", price, convertedBudget);
-                                return price <= convertedBudget;
+                                return price.compareTo(convertedBudget) <= 0;
                             })
                             .collect(Collectors.toList());
 
@@ -79,7 +87,7 @@ public class EventsServiceImpl implements EventsService {
             return eventsClient.getEvents(eventsRequestDto.getDateFromAsUnixTimestamp(), eventsRequestDto.getDateToAsUnixTimestamp());
         });
 
-        CompletableFuture<Double> convertedBudgetFuture = CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<BigDecimal> convertedBudgetFuture = CompletableFuture.supplyAsync(() -> {
             log.info("Converting budget: {}", eventsRequestDto.getBudget());
             return currencyClient.convertCurrency(eventsRequestDto.getBudget());
         });
@@ -92,9 +100,18 @@ public class EventsServiceImpl implements EventsService {
 
             List<EventDto> filteredEvents = events.stream()
                     .filter(event -> {
-                        double price = StringToNumberUtils.getNumberFromString(event.getPrice());
+                        BigDecimal price;
+                        try {
+                            if (event.getPrice() == null || event.getPrice().trim().isEmpty()) {
+                                price = BigDecimal.ZERO;
+                            } else {
+                                price = new BigDecimal(event.getPrice().trim());
+                            }
+                        } catch (NumberFormatException e) {
+                            price = BigDecimal.ZERO;
+                        }
                         log.info("Checking event price: {}, converted budget: {}", price, convertedBudget);
-                        return price <= convertedBudget;
+                        return price.compareTo(convertedBudget) <= 0;
                     })
                     .collect(Collectors.toList());
 
