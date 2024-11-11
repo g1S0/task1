@@ -19,6 +19,8 @@ public class UserController {
 
     private final AuthService service;
 
+    private static final String VALID_CONFIRMATION_CODE = "0000";
+
     public UserController(AuthService service) {
         this.service = service;
     }
@@ -28,7 +30,7 @@ public class UserController {
             @RequestBody ChangePasswordRequestDto request,
             Principal connectedUser
     ) {
-        if (!request.getCode().equals("0000")) {
+        if (!request.getCode().equals(VALID_CONFIRMATION_CODE)) {
             throw new InvalidConfirmationCodeException("Code is invalid");
         }
 
