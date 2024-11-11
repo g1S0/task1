@@ -2,7 +2,10 @@ package org.tbank.hw5.initializer;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -10,9 +13,13 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.tbank.hw5.client.CategoryApiClient;
 import org.tbank.hw5.client.LocationApiClient;
+import org.tbank.hw5.dto.CategoryDto;
+import org.tbank.hw5.dto.LocationDto;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.wiremock.integrations.testcontainers.WireMockContainer;
+
+import java.util.List;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -48,20 +55,18 @@ class DataSourceFailureInitializationIT {
     }
 
     @Test
-    void shouldThrowExceptionOnInvalidLocationData() {
+    void shouldReturnEmptyListOnInvalidLocationData() {
         WireMockStubManager.setInvalidLocationStub();
 
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            categoryApiClient.fetchCategories();
-        });
+        List<LocationDto> locations = locationApiClient.fetchLocations();
+        Assertions.assertTrue(locations.isEmpty());
     }
 
     @Test
-    void shouldThrowExceptionOnInvalidCategoryData() {
+    void shouldReturnEmptyListOnInvalidCategoryData() {
         WireMockStubManager.setInvalidCategoryStub();
 
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            locationApiClient.fetchLocations();
-        });
+        List<CategoryDto> categories = categoryApiClient.fetchCategories();
+        Assertions.assertTrue(categories.isEmpty());
     }
 }
