@@ -60,11 +60,6 @@ databaseChangeLog:
                     nullable: false
                     unique: true
               - column:
-                  name: token_type
-                  type: VARCHAR(50)
-                  constraints:
-                    nullable: false
-              - column:
                   name: revoked
                   type: BOOLEAN
                   constraints:

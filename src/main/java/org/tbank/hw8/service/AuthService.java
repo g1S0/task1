@@ -10,7 +10,6 @@ import org.tbank.hw8.dto.AuthenticationRequestDto;
 import org.tbank.hw8.dto.AuthenticationResponseDto;
 import org.tbank.hw8.dto.ChangePasswordRequestDto;
 import org.tbank.hw8.entity.Token;
-import org.tbank.hw8.entity.TokenType;
 import org.tbank.hw8.entity.User;
 import org.tbank.hw8.repository.TokenRepository;
 import org.tbank.hw8.repository.UserRepository;
@@ -65,7 +64,6 @@ public class AuthService {
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
-                .tokenType(TokenType.BEARER)
                 .revoked(false)
                 .build();
         tokenRepository.save(token);
