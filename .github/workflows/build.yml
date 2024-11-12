@@ -32,4 +32,4 @@ jobs:
 
       # Build project with gradle
       - name: Build hw5 with Gradle
-        run: ./gradlew clean build --no-daemon -p src/main/java/org/tbank/hw5
+        run: ./gradlew clean build --no-daemon
