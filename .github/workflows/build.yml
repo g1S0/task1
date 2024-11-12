@@ -32,4 +32,4 @@ jobs:
 
       # Build project with gradle
       - name: Build hw5 with Gradle
-        run: ./gradlew clean build --no-daemon
+        run: ./gradlew clean build -PtestPackage --no-daemon

@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'jacoco'
+    id 'application'
 }
 
 group 'org.tbank'
@@ -12,15 +13,20 @@ repositories {
     mavenLocal()
     mavenCentral()
 }
+
+application {
+    mainClass.set('org.tbank.hw5.Main')
+}
+
 sourceSets {
     main {
         java {
-            srcDirs = ['src/main/java/org/tbank/hw5']
+            srcDirs = ['src/main/java']
         }
     }
     test {
         java {
-            srcDirs = ['src/test/java/org/tbank/hw5']
+            srcDirs = ['src/test/java']
         }
     }
 }
@@ -54,8 +60,6 @@ dependencies {
 
     implementation 'org.aspectj:aspectjweaver'
 
-    implementation 'org.example:annotation-starter:1.0-SNAPSHOT'
-
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.0'
 
@@ -82,6 +86,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    if (project.hasProperty('testPackage')) {
+        include '**/hw5/**'
+    }
     finalizedBy jacocoTestReport
 }
 
