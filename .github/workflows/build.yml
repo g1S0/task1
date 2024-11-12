@@ -42,11 +42,11 @@ jobs:
           name: jacoco-coverage-report
           path: build/reports/jacoco/test/html/
 
-        # Run Checkstyle
+      # Run Checkstyle
       - name: Run Checkstyle Analysis
         run: ./gradlew checkstyleMain checkstyleTest
 
-        # Upload Checkstyle report as artifact
+      # Upload Checkstyle report as artifact
       - name: Upload Checkstyle Report
         uses: actions/upload-artifact@v3
         with:
