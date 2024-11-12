@@ -1,0 +1,35 @@
+name: Build on Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Clone repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Install JDK
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # Cache gradle dependencies
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle
+
+      # Build project with gradle
+      - name: Build hw5 with Gradle
+        run: ./gradlew clean build --no-daemon -p src/main/java/org/tbank/hw5
