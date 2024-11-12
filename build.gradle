@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'checkstyle'
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'jacoco'
@@ -8,6 +9,28 @@ plugins {
 
 group 'org.tbank'
 version '1.0-SNAPSHOT'
+
+checkstyle {
+    toolVersion = '10.20.1'
+    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    ignoreFailures = true
+}
+
+task checkstyleHw5(type: Checkstyle) {
+    source 'src/main/java/org/tbank/hw5'
+    include '**/*.java'
+    classpath = sourceSets.main.runtimeClasspath
+    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    ignoreFailures = true
+}
+
+task checkstyleTestHw5(type: Checkstyle) {
+    source 'src/test/java/org/tbank/hw5'
+    include '**/*.java'
+    classpath = sourceSets.test.runtimeClasspath
+    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    ignoreFailures = true
+}
 
 repositories {
     mavenLocal()

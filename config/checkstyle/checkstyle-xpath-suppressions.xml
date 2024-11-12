@@ -1,0 +1,4 @@
+<module name="SuppressionXpathFilter">
+    <property name="file" value="config/suppressions.xml"/>
+    <property name="optional" value="false"/>
+</module>
