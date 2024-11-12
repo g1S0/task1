@@ -53,9 +53,14 @@ jobs:
           name: checkstyle-report
           path: build/reports/checkstyle/
 
+      # Convert repository name to lowercase
+      - name: Convert repository name to lowercase
+        id: lowercase_repo
+        run: echo "REPO_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       # Build Docker image
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository }}/my-docker-image:${{ github.sha }} .
+        run: docker build -t ghcr.io/${{ env.REPO_NAME }}/my-docker-image:${{ github.sha }} .
 
       # Log in to GitHub Container Registry (GHCR)
       - name: Log in to GitHub Container Registry
