@@ -89,6 +89,8 @@ dependencies {
     implementation 'org.openjdk.jmh:jmh-generator-bytecode:1.37'
 
     implementation 'org.apache.kafka:kafka-clients:3.4.0'
+
+    implementation 'org.springframework.amqp:spring-rabbit:2.4.9'
 }
 
 test {
