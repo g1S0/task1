@@ -1,4 +1,4 @@
-package hw_kafka.rabbitMq;
+package hw_benchmark.rabbitMq;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -16,13 +16,14 @@ import java.util.concurrent.TimeoutException;
 @Measurement(iterations = 10, time = 5)
 @Fork(1)
 @OutputTimeUnit(TimeUnit.SECONDS)
-public class LoadBalancingMultipleConsumersBenchmark {
-    private static final String QUEUE_NAME = "load_balancing_queue";
-    private static final String EXCHANGE_NAME = "load_balancing_exchange";
+public class StressTestRabbitMQBenchmark {
+
+    private static final String QUEUE_NAME = "stress_test_queue";
+    private static final String EXCHANGE_NAME = "stress_test_exchange";
 
     private Connection connection;
     private List<Channel> producers = new ArrayList<>();
-    private Channel consumerChannel;
+    private List<Channel> consumers = new ArrayList<>();
 
     @Setup(Level.Trial)
     public void setup() throws IOException, TimeoutException {
@@ -32,7 +33,7 @@ public class LoadBalancingMultipleConsumersBenchmark {
         factory.setPassword("password");
         connection = factory.newConnection();
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 10; i++) {
             Channel producer = connection.createChannel();
             producer.exchangeDeclare(EXCHANGE_NAME, "direct", true);
             producer.queueDeclare(QUEUE_NAME, true, false, false, null);
@@ -40,8 +41,11 @@ public class LoadBalancingMultipleConsumersBenchmark {
             producers.add(producer);
         }
 
-        consumerChannel = connection.createChannel();
-        consumerChannel.queueDeclare(QUEUE_NAME, true, false, false, null);
+        for (int i = 0; i < 10; i++) {
+            Channel consumer = connection.createChannel();
+            consumer.queueDeclare(QUEUE_NAME, true, false, false, null);
+            consumers.add(consumer);
+        }
     }
 
     @TearDown(Level.Trial)
@@ -51,8 +55,10 @@ public class LoadBalancingMultipleConsumersBenchmark {
                 producer.close();
             }
         }
-        if (consumerChannel != null && consumerChannel.isOpen()) {
-            consumerChannel.close();
+        for (Channel consumer : consumers) {
+            if (consumer != null && consumer.isOpen()) {
+                consumer.close();
+            }
         }
         if (connection != null && connection.isOpen()) {
             connection.close();
@@ -66,8 +72,10 @@ public class LoadBalancingMultipleConsumersBenchmark {
             producers.get(i).basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
         }
 
-        consumerChannel.basicConsume(QUEUE_NAME, true, (consumerTag, delivery) -> {
-        }, consumerTag -> {
-        });
+        for (Channel consumer : consumers) {
+            consumer.basicConsume(QUEUE_NAME, true, (consumerTag, delivery) -> {
+            }, consumerTag -> {
+            });
+        }
     }
 }

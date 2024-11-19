@@ -1,4 +1,4 @@
-package hw_kafka.rabbitMq;
+package hw_benchmark.rabbitMq;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -11,14 +11,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-@BenchmarkMode(Mode.Throughput)
 @State(Scope.Benchmark)
 @Warmup(iterations = 5, time = 10)
 @Measurement(iterations = 10, time = 5)
 @Fork(1)
 @OutputTimeUnit(TimeUnit.SECONDS)
-public class LoadBalancingRabbitMQBenchmark {
-
+public class LoadBalancingMultipleConsumersBenchmark {
     private static final String QUEUE_NAME = "load_balancing_queue";
     private static final String EXCHANGE_NAME = "load_balancing_exchange";
 
@@ -73,4 +71,3 @@ public class LoadBalancingRabbitMQBenchmark {
         });
     }
 }
-
