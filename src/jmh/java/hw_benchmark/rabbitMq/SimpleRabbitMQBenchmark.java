@@ -1,4 +1,4 @@
-package hw_kafka.rabbitMq;
+package hw_benchmark.rabbitMq;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;

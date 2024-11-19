@@ -1,4 +1,4 @@
-package hw_kafka.rabbitMq;
+package hw_benchmark.rabbitMq;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -11,19 +11,20 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+@BenchmarkMode(Mode.Throughput)
 @State(Scope.Benchmark)
 @Warmup(iterations = 5, time = 10)
 @Measurement(iterations = 10, time = 5)
 @Fork(1)
 @OutputTimeUnit(TimeUnit.SECONDS)
-public class StressTestRabbitMQBenchmark {
+public class LoadBalancingRabbitMQBenchmark {
 
-    private static final String QUEUE_NAME = "stress_test_queue";
-    private static final String EXCHANGE_NAME = "stress_test_exchange";
+    private static final String QUEUE_NAME = "load_balancing_queue";
+    private static final String EXCHANGE_NAME = "load_balancing_exchange";
 
     private Connection connection;
     private List<Channel> producers = new ArrayList<>();
-    private List<Channel> consumers = new ArrayList<>();
+    private Channel consumerChannel;
 
     @Setup(Level.Trial)
     public void setup() throws IOException, TimeoutException {
@@ -33,7 +34,7 @@ public class StressTestRabbitMQBenchmark {
         factory.setPassword("password");
         connection = factory.newConnection();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 3; i++) {
             Channel producer = connection.createChannel();
             producer.exchangeDeclare(EXCHANGE_NAME, "direct", true);
             producer.queueDeclare(QUEUE_NAME, true, false, false, null);
@@ -41,11 +42,8 @@ public class StressTestRabbitMQBenchmark {
             producers.add(producer);
         }
 
-        for (int i = 0; i < 10; i++) {
-            Channel consumer = connection.createChannel();
-            consumer.queueDeclare(QUEUE_NAME, true, false, false, null);
-            consumers.add(consumer);
-        }
+        consumerChannel = connection.createChannel();
+        consumerChannel.queueDeclare(QUEUE_NAME, true, false, false, null);
     }
 
     @TearDown(Level.Trial)
@@ -55,10 +53,8 @@ public class StressTestRabbitMQBenchmark {
                 producer.close();
             }
         }
-        for (Channel consumer : consumers) {
-            if (consumer != null && consumer.isOpen()) {
-                consumer.close();
-            }
+        if (consumerChannel != null && consumerChannel.isOpen()) {
+            consumerChannel.close();
         }
         if (connection != null && connection.isOpen()) {
             connection.close();
@@ -72,10 +68,9 @@ public class StressTestRabbitMQBenchmark {
             producers.get(i).basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
         }
 
-        for (Channel consumer : consumers) {
-            consumer.basicConsume(QUEUE_NAME, true, (consumerTag, delivery) -> {
-            }, consumerTag -> {
-            });
-        }
+        consumerChannel.basicConsume(QUEUE_NAME, true, (consumerTag, delivery) -> {
+        }, consumerTag -> {
+        });
     }
 }
+

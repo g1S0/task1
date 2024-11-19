@@ -1,4 +1,4 @@
-package hw_kafka.kafka;
+package hw_benchmark.kafka;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;

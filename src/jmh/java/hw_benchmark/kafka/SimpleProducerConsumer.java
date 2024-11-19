@@ -1,9 +1,10 @@
-package hw_kafka.kafka;
+package hw_benchmark.kafka;
 
-public class LoadBalancing extends AbstractKafkaBenchmark {
+
+public class SimpleProducerConsumer extends AbstractKafkaBenchmark {
     @Override
     public int getNumProducers() {
-        return 3;
+        return 1;
     }
 
     @Override
@@ -13,12 +14,11 @@ public class LoadBalancing extends AbstractKafkaBenchmark {
 
     @Override
     public String getTopic() {
-        return "LoadBalancing";
+        return "simple";
     }
 
     @Override
     public String getGroupId() {
-        return "LoadBalancing_group_id";
+        return "simple_group_id";
     }
 }
-

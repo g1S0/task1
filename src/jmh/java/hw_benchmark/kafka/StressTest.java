@@ -1,4 +1,4 @@
-package hw_kafka.kafka;
+package hw_benchmark.kafka;
 
 public class StressTest extends AbstractKafkaBenchmark {
     @Override
