@@ -62,14 +62,22 @@ public class MultipleConsumersRabbitMQBenchmark {
 
     @Benchmark
     public void runTest() throws IOException {
-        String message = "Hello, RabbitMQ!";
+        long producerStartTime = System.nanoTime();
+        String message = "Message";
         producerChannel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
+        long producerEndTime = System.nanoTime();
+        long producerLatency = producerEndTime - producerStartTime;
+        System.out.println("MultipleConsumersRabbitMQBenchmark Producer latency: " + producerLatency + " ns");
 
+        long consumerStartTime = System.nanoTime();
         for (Channel consumer : consumers) {
             consumer.basicConsume(QUEUE_NAME, true, (consumerTag, delivery) -> {
             }, consumerTag -> {
             });
         }
+        long consumerEndTime = System.nanoTime();
+        long consumerLatency = consumerEndTime - consumerStartTime;
+        System.out.println("MultipleConsumersRabbitMQBenchmark Consumer latency: " + consumerLatency + " ns");
     }
 }
 

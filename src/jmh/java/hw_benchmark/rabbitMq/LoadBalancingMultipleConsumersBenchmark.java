@@ -62,13 +62,22 @@ public class LoadBalancingMultipleConsumersBenchmark {
 
     @Benchmark
     public void runTest() throws IOException {
+        long producerStartTime = System.nanoTime();
         for (int i = 0; i < producers.size(); i++) {
             String message = "Message " + (i + 1);
             producers.get(i).basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
         }
+        long producerEndTime = System.nanoTime();
+        long producerLatency = producerEndTime - producerStartTime;
+        System.out.println("LoadBalancingMultipleConsumersBenchmark Producer latency: " + producerLatency + " ns");
 
+        long consumerStartTime = System.nanoTime();
         consumerChannel.basicConsume(QUEUE_NAME, true, (consumerTag, delivery) -> {
         }, consumerTag -> {
         });
+
+        long consumerEndTime = System.nanoTime();
+        long consumerLatency = consumerEndTime - consumerStartTime;
+        System.out.println("LoadBalancingMultipleConsumersBenchmark Consumer latency: " + consumerLatency + " ns");
     }
 }
