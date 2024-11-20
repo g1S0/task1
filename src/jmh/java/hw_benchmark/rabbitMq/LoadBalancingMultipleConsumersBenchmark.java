@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+@BenchmarkMode(Mode.Throughput)
 @State(Scope.Benchmark)
 @Warmup(iterations = 5, time = 10)
 @Measurement(iterations = 10, time = 5)
