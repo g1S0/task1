@@ -1,5 +1,7 @@
 package hw_benchmark.kafka;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -36,15 +38,24 @@ public abstract class AbstractKafkaBenchmark {
         List<KafkaConsumer<String, String>> consumers = createConsumers(getNumConsumers(), topic, groupId);
 
         try {
+            long producerStartTime = System.nanoTime();
             for (int i = 0; i < producers.size(); i++) {
                 KafkaProducer<String, String> producer = producers.get(i);
                 String message = "message" + (i + 1);
                 producer.send(new ProducerRecord<>(topic, "key" + (i + 1), message));
                 producer.flush();
             }
+            long producerEndTime = System.nanoTime();
+            long producerLatency = producerEndTime - producerStartTime;
+            System.out.println("Producer latency: " + producerLatency + " ns");
 
             for (KafkaConsumer<String, String> consumer : consumers) {
+                long pollStartTime = System.nanoTime();
                 consumer.poll(Duration.ofMillis(1000));
+                long pollEndTime = System.nanoTime();
+
+                long consumerLatency = pollEndTime - pollStartTime;
+                System.out.println("Consumer latency (poll): " + consumerLatency + " ns");
             }
         } finally {
             producers.forEach(KafkaProducer::close);
