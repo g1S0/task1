@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.liquibase.gradle' version '2.2.0'
     id 'jacoco'
 }
 
@@ -78,6 +79,34 @@ dependencies {
     testImplementation "org.wiremock:wiremock-standalone:3.6.0"
     testImplementation 'io.rest-assured:rest-assured'
     testImplementation "org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:1.0-alpha-13"
+
+    liquibaseRuntime 'org.liquibase:liquibase-core:4.20.0'
+    liquibaseRuntime 'info.picocli:picocli:4.6.3'
+    liquibaseRuntime 'org.postgresql:postgresql:42.7.2'
+
+    implementation 'org.hibernate:hibernate-core:6.2.13.Final'
+    implementation 'org.postgresql:postgresql:42.7.2'
+    implementation 'org.hibernate:hibernate-validator:6.2.0.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.yaml:snakeyaml:2.0'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    testImplementation 'org.testcontainers:postgresql:1.17.6'
+    runtimeOnly 'com.h2database:h2'
+}
+
+liquibase {
+    activities {
+        main {
+            changeLogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
+            url "jdbc:postgresql://${System.getenv('DB_HOST') ?: 'localhost'}:${System.getenv('DB_PORT') ?: '5432'}/${System.getenv('DB_NAME') ?: 'user_data'}"
+            username "${System.getenv('DB_USERNAME') ?: 'admin'}"
+            password "${System.getenv('DB_PASSWORD') ?: 'admin'}"
+            driver "org.postgresql.Driver"
+        }
+    }
 }
 
 test {

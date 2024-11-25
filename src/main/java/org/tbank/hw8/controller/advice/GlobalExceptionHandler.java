@@ -3,12 +3,13 @@ package org.tbank.hw8.controller.advice;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.tbank.hw8.exception.CurrencyIsNotSupportedByCbException;
-import org.tbank.hw8.exception.UnsupportedCurrencyException;
-import org.tbank.hw8.exception.ServiceUnavailableException;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.tbank.hw5.dto.ResponseDto;
+import org.tbank.hw8.exception.*;
 import org.tbank.hw8.exception.model.CustomErrorResponse;
 
 import java.util.HashMap;
@@ -31,6 +32,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnsupportedCurrencyException.class)
     public ResponseEntity<CustomErrorResponse> handleUnsupportedCurrency(UnsupportedCurrencyException ex) {
         return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidAuthorizationHeaderException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ResponseDto<String>> handleInvalidAuthorizationHeaderException(InvalidAuthorizationHeaderException ex) {
+        ResponseDto<String> response = new ResponseDto<>(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CurrencyIsNotSupportedByCbException.class)
@@ -59,5 +67,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomErrorResponse> handleGenericException(Exception ex) {
         return buildErrorResponse("Unknown error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InvalidConfirmationCodeException.class)
+    public ResponseEntity<CustomErrorResponse> handleInvalidConfirmationCodeException(InvalidConfirmationCodeException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException ex) {
+        return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
     }
 }

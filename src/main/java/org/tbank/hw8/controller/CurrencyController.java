@@ -63,6 +63,5 @@ public class CurrencyController {
     ResponseEntity<ConvertedAmountDto> convertCurrency(@Valid @RequestBody CurrencyConversionRequestDto request) {
         final ConvertedAmountDto convertedAmountDto = currencyService.convertCurrency(request);
         return new ResponseEntity<>(convertedAmountDto, HttpStatus.OK);
-
     }
 }
