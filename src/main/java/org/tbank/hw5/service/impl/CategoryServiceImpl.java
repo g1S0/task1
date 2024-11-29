@@ -1,5 +1,7 @@
 package org.tbank.hw5.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.tbank.hw5.model.Category;
 import org.tbank.hw5.service.CategoryService;
@@ -8,6 +10,7 @@ import org.tbank.hw5.storage.impl.CategoryStorage;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryStorage categoryStorage;
@@ -18,7 +21,16 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> getAllCategories() {
-        return categoryStorage.findAll();
+        String requestId = "123";
+        MDC.put("requestId", requestId);
+
+        try {
+            log.info("Fetching all categories");
+
+            return categoryStorage.findAll();
+        } finally {
+            MDC.clear();
+        }
     }
 
     @Override
