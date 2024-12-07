@@ -1,18 +1,47 @@
 plugins {
     id 'java'
+    id 'checkstyle'
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'org.liquibase.gradle' version '2.2.0'
     id 'jacoco'
+    id 'application'
 }
 
 group 'org.tbank'
 version '1.0-SNAPSHOT'
 
+checkstyle {
+    toolVersion = '10.20.1'
+    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    ignoreFailures = true
+}
+
+task checkstyleHw5(type: Checkstyle) {
+    source 'src/main/java/org/tbank/hw5'
+    include '**/*.java'
+    classpath = sourceSets.main.runtimeClasspath
+    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    ignoreFailures = true
+}
+
+task checkstyleTestHw5(type: Checkstyle) {
+    source 'src/test/java/org/tbank/hw5'
+    include '**/*.java'
+    classpath = sourceSets.test.runtimeClasspath
+    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    ignoreFailures = true
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
 }
+
+application {
+    mainClass.set('org.tbank.hw5.Main')
+}
+
 sourceSets {
     main {
         java {
@@ -54,8 +83,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
     implementation 'org.aspectj:aspectjweaver'
-
-    implementation 'org.example:annotation-starter:1.0-SNAPSHOT'
 
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.0'
@@ -111,6 +138,9 @@ liquibase {
 
 test {
     useJUnitPlatform()
+    if (project.hasProperty('testPackage')) {
+        include '**/hw5/**'
+    }
     finalizedBy jacocoTestReport
 }
 

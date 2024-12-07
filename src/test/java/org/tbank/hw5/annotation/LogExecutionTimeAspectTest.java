@@ -1,8 +1,7 @@
 package org.tbank.hw5.annotation;
 
 import nl.altindag.log.LogCaptor;
-import org.example.annotation.LogExecutionTime;
-import org.example.annotation.LogExecutionTimeAspect;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
